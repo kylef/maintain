@@ -18,6 +18,7 @@ setup(
     },
     install_requires=[
         'click',
+        'semantic_version'
     ],
     author='Kyle Fuller',
     author_email='kyle@fuller.li',
