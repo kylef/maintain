@@ -14,11 +14,19 @@ from maintain.release.npm import NPMReleaser
 
 @click.command()
 @click.argument('version')
-def release(version):
+@click.option('--dry-run/--no-dry-run', default=False)
+@click.option('--bump/--no-bump', default=True)
+@click.option('--pull-request/--no-pull-request', default=True)
+def release(version, dry_run, bump, pull_request):
     try:
         version = Version(version)
     except ValueError as e:
         click.echo('{} is not a valid semantic version.'.format(version), err=True)
+        exit(1)
+
+    if pull_request and not cmd_exists:
+        click.echo('Missing dependency for hub: https://github.com/github/hub.' +
+                   ' Please install `hub` and try again.')
         exit(1)
 
     all_releasers_cls = [CocoaPodsReleaser, NPMReleaser]
@@ -29,16 +37,29 @@ def release(version):
     git_check_branch()
     git_update()
     git_check_dirty()
-    bump_version_file(version)
-    map(lambda r: r.bump(version), releasers)
-    invoke(['git', 'commit', '-a', '-m', 'Release {}'.format(version)])
-    invoke(['git', 'tag', '-a', str(version), '-m', 'Release {}'.format(version)])
 
-    if False:
-        invoke(['git', 'push', 'origin', 'master'])
+    if bump:
+        branch = 'master'
+        if pull_request:
+            branch = 'release-{}'.format(version)
+            invoke(['git', 'checkout', '-b', branch])
+
+        bump_version_file(version)
+        map(lambda r: r.bump(version), releasers)
+        click.echo('Committing and tagging {}'.format(version))
+        message = 'Release {}'.format(version)
+        invoke(['git', 'commit', '-a', '-m', message])
+
+        if not dry_run:
+            invoke(['git', 'push', 'origin', branch])
+            if pull_request:
+                invoke(['hub', 'pull-request', '-m', message])
+
+    if not dry_run and not pull_request:
+        invoke(['git', 'tag', '-a', str(version), '-m', 'Release {}'.format(version)])
         invoke(['git', 'push', 'origin', str(version)])
 
-    map(lambda r: r.release(), releasers)
+        map(lambda r: r.release(), releasers)
 
 
 
@@ -74,3 +95,7 @@ def bump_version_file(version):
     with open('VERSION', 'w') as fp:
         fp.write(str(version))
 
+
+def cmd_exists(cmd):
+    return subprocess.call('type {}'.format(cmd), shell=True,
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE) == 0
