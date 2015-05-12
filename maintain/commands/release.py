@@ -8,6 +8,8 @@ import click
 from semantic_version import Version
 
 from maintain.process import invoke
+from maintain.release.cocoapods import CocoaPodsReleaser
+from maintain.release.npm import NPMReleaser
 
 
 @click.command()
@@ -19,7 +21,7 @@ def release(version):
         click.echo('{} is not a valid semantic version.'.format(version), err=True)
         exit(1)
 
-    all_releasers_cls = [CocoaPodsReleaser]
+    all_releasers_cls = [CocoaPodsReleaser, NPMReleaser]
     releasers_cls = filter(lambda r: r.detect(), all_releasers_cls)
     releasers = map(lambda r: r(), releasers_cls)
 
