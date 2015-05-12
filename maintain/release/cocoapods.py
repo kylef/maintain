@@ -39,7 +39,7 @@ class CocoaPodsReleaser(Releaser):
     def bump(self, new_version):
         with open(self.podspec) as fp:
             spec = json.load(fp, object_pairs_hook=collections.OrderedDict)
-            spec['version'] = new_version
+            spec['version'] = str(new_version)
 
         with open(self.podspec, 'w') as fp:
             json.dump(spec, fp, indent=2, separators=(',', ': '))
