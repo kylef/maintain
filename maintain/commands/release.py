@@ -3,11 +3,14 @@ from glob import glob
 import json
 import collections
 import subprocess
+import ConfigParser
+from StringIO import StringIO
 
 import click
+import yaml
 from semantic_version import Version
 
-from maintain.process import invoke
+from maintain.process import invoke, temp_directory, chdir
 from maintain.release.cocoapods import CocoaPodsReleaser
 from maintain.release.npm import NPMReleaser
 
@@ -16,8 +19,9 @@ from maintain.release.npm import NPMReleaser
 @click.argument('version')
 @click.option('--dry-run/--no-dry-run', default=False)
 @click.option('--bump/--no-bump', default=True)
-@click.option('--pull-request/--no-pull-request', default=True)
-def release(version, dry_run, bump, pull_request):
+@click.option('--pull-request/--no-pull-request', default=False)
+@click.option('--dependents/--no-dependents', default=True)
+def release(version, dry_run, bump, pull_request, dependents):
     try:
         version = Version(version)
     except ValueError as e:
@@ -28,6 +32,12 @@ def release(version, dry_run, bump, pull_request):
         click.echo('Missing dependency for hub: https://github.com/github/hub.' +
                    ' Please install `hub` and try again.')
         exit(1)
+
+    if os.path.exists('.maintain.yml'):
+        with open('.maintain.yml') as fp:
+            config = yaml.load(fp.read())
+    else:
+        config = {}
 
     all_releasers_cls = [CocoaPodsReleaser, NPMReleaser]
     releasers_cls = filter(lambda r: r.detect(), all_releasers_cls)
@@ -61,6 +71,10 @@ def release(version, dry_run, bump, pull_request):
 
         map(lambda r: r.release(), releasers)
 
+    if dependents and not pull_request and 'dependents' in config:
+        # TODO dry run
+        url = subprocess.check_output('git config --get remote.origin.url', shell=True).strip()
+        map(lambda x: update_dependent(x, version, url), config['dependents'])
 
 
 def git_check_repository():
@@ -87,6 +101,30 @@ def git_check_dirty():
     invoke(['git', 'diff', '--cached'], error)
 
 
+def git_load_config(filepath):
+    parser = ConfigParser.SafeConfigParser()
+
+    with open(filepath) as fp:
+        contents = ''.join([line.lstrip() for line in fp.readlines()])
+        parser.readfp(StringIO(contents))
+
+    return parser
+
+
+def git_get_submodules():
+    if os.path.exists('.gitmodules'):
+        gitmodules = git_load_config('.gitmodules')
+        def module(section):
+            return (
+                gitmodules.get(section, 'path'),
+                gitmodules.get(section, 'url'),
+            )
+        return dict(map(module, gitmodules.sections()))
+
+
+def github_create_pr(message):
+    invoke(['hub', 'pull-request', '-m', message])
+
 
 def bump_version_file(version):
     if not os.path.exists('VERSION'):
@@ -99,3 +137,35 @@ def bump_version_file(version):
 def cmd_exists(cmd):
     return subprocess.call('type {}'.format(cmd), shell=True,
         stdout=subprocess.PIPE, stderr=subprocess.PIPE) == 0
+
+
+def update_dependent(dependent, version, source_url):
+    with temp_directory():
+        invoke(['git', 'clone', dependent, 'repository', '--depth', '1'])
+
+        with chdir('repository'):
+            # Check for submodules
+            submodules = git_get_submodules()
+            if not submodules:
+                return  # TODO Only git submodules are supported
+
+            module = next(iter(filter(lambda m: m[1] == source_url, submodules.items())), None)
+            if not module:
+                return
+
+            invoke(['git', 'submodule', 'update', '--init'])
+
+            with chdir(module[0]):
+                invoke(['git', 'checkout', str(version)])
+
+            # TODO branch name
+            branch = 'update'
+            invoke(['git', 'checkout', '-b', branch])
+
+            # TODO commit message
+            package = 'Unknown'
+            message = '[{}] Update to {}'.format(package, version)
+            invoke(['git', 'commit', '-a', '-m', message])
+            invoke(['git', 'push', 'origin', branch])
+            invoke(['hub', 'pull-request', '-m', message])
+
