@@ -2,6 +2,8 @@ import json
 import collections
 from glob import glob
 
+from semantic_version import Version
+
 from maintain.release.base import Releaser
 from maintain.process import invoke
 
@@ -35,6 +37,11 @@ class CocoaPodsReleaser(Releaser):
         if not self.podspec.endswith('.json'):
             # TODO Add support for Ruby Podspecs
             raise Exception('Ruby podspecs are currently unsupported.')
+
+    def determine_current_version(self):
+        with open(self.podspec) as fp:
+            spec = json.load(fp)
+            return Version(spec['version'])
 
     def bump(self, new_version):
         with open(self.podspec) as fp:
