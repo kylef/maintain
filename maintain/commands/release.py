@@ -22,11 +22,12 @@ from maintain.release.npm import NPMReleaser
 @click.option('--pull-request/--no-pull-request', default=False)
 @click.option('--dependents/--no-dependents', default=True)
 def release(version, dry_run, bump, pull_request, dependents):
-    try:
-        version = Version(version)
-    except ValueError as e:
-        click.echo('{} is not a valid semantic version.'.format(version), err=True)
-        exit(1)
+    if version not in ('major', 'minor', 'patch'):
+        try:
+            version = Version(version)
+        except ValueError as e:
+            click.echo('{} is not a valid semantic version.'.format(version), err=True)
+            exit(1)
 
     if pull_request and not cmd_exists:
         click.echo('Missing dependency for hub: https://github.com/github/hub.' +
@@ -42,6 +43,15 @@ def release(version, dry_run, bump, pull_request, dependents):
     all_releasers_cls = [CocoaPodsReleaser, NPMReleaser]
     releasers_cls = filter(lambda r: r.detect(), all_releasers_cls)
     releasers = map(lambda r: r(), releasers_cls)
+
+    if len(releasers) == 0:
+        click.echo('Project doesn\'t use any supported releasers.')
+        exit(1)
+
+    check_versions_are_same(releasers)
+
+    if version in ('major', 'minor', 'patch'):
+        version = bump_version(releasers[0].determine_current_version(), version)
 
     git_check_repository()
     git_check_branch()
@@ -75,6 +85,35 @@ def release(version, dry_run, bump, pull_request, dependents):
         # TODO dry run
         url = subprocess.check_output('git config --get remote.origin.url', shell=True).strip()
         map(lambda x: update_dependent(x, version, url), config['dependents'])
+
+
+def check_versions_are_same(releasers):
+    """
+    Determine if anyr eleasers have inconsistent versions
+    """
+
+    version = None
+    releaser_name = None
+
+    for releaser in releasers:
+        next_version = releaser.determine_current_version()
+
+        if version and version != next_version:
+            click.echo('Inconsistent versions, {} is at {} but {} is at {}.'.format(
+                       releaser_name, version, releaser.name, next_version))
+            exit(1)
+
+        version = next_version
+        releaser_name = releaser.name
+
+
+def bump_version(version, bump):
+    if version.prerelease or version.build:
+        print('Current version {} contains prerelease or build. ' +
+              'Bumping is not supported.'.format(version))
+        exit(1)
+
+    return getattr(version, 'next_{}'.format(bump))()
 
 
 def git_check_repository():
