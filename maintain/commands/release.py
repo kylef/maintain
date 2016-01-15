@@ -11,6 +11,7 @@ import yaml
 from semantic_version import Version
 
 from maintain.process import invoke, temp_directory, chdir
+from maintain.release.version_file import VersionFileReleaser
 from maintain.release.python import PythonReleaser
 from maintain.release.cocoapods import CocoaPodsReleaser
 from maintain.release.npm import NPMReleaser
@@ -41,7 +42,12 @@ def release(version, dry_run, bump, pull_request, dependents):
     else:
         config = {}
 
-    all_releasers_cls = [PythonReleaser, CocoaPodsReleaser, NPMReleaser]
+    all_releasers_cls = [
+        VersionFileReleaser,
+        PythonReleaser,
+        CocoaPodsReleaser,
+        NPMReleaser
+    ]
     releasers_cls = filter(lambda r: r.detect(), all_releasers_cls)
     releasers = map(lambda r: r(), releasers_cls)
 
@@ -65,7 +71,6 @@ def release(version, dry_run, bump, pull_request, dependents):
             branch = 'release-{}'.format(version)
             invoke(['git', 'checkout', '-b', branch])
 
-        bump_version_file(version)
         map(lambda r: r.bump(version), releasers)
         click.echo('Committing and tagging {}'.format(version))
         message = 'Release {}'.format(version)
@@ -164,14 +169,6 @@ def git_get_submodules():
 
 def github_create_pr(message):
     invoke(['hub', 'pull-request', '-m', message])
-
-
-def bump_version_file(version):
-    if not os.path.exists('VERSION'):
-        return
-
-    with open('VERSION', 'w') as fp:
-        fp.write(str(version))
 
 
 def cmd_exists(cmd):
