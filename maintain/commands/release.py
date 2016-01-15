@@ -11,6 +11,7 @@ import yaml
 from semantic_version import Version
 
 from maintain.process import invoke, temp_directory, chdir
+from maintain.release.python import PythonReleaser
 from maintain.release.cocoapods import CocoaPodsReleaser
 from maintain.release.npm import NPMReleaser
 
@@ -40,7 +41,7 @@ def release(version, dry_run, bump, pull_request, dependents):
     else:
         config = {}
 
-    all_releasers_cls = [CocoaPodsReleaser, NPMReleaser]
+    all_releasers_cls = [PythonReleaser, CocoaPodsReleaser, NPMReleaser]
     releasers_cls = filter(lambda r: r.detect(), all_releasers_cls)
     releasers = map(lambda r: r(), releasers_cls)
 

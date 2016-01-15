@@ -40,6 +40,7 @@ $ maintain release 0.3.1 --no-bump
 
 #### Supported Packages
 
+- Python
 - [CocoaPods](https://cocoapods.org)
 - [NPM](https://www.npmjs.com)
 
