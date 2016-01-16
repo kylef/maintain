@@ -31,7 +31,7 @@ def release(version, dry_run, bump, pull_request, dependents):
             click.echo('{} is not a valid semantic version.'.format(version), err=True)
             exit(1)
 
-    if pull_request and not cmd_exists:
+    if pull_request and not cmd_exists('hub'):
         click.echo('Missing dependency for hub: https://github.com/github/hub.' +
                    ' Please install `hub` and try again.')
         exit(1)
@@ -42,20 +42,8 @@ def release(version, dry_run, bump, pull_request, dependents):
     else:
         config = {}
 
-    all_releasers_cls = [
-        VersionFileReleaser,
-        PythonReleaser,
-        CocoaPodsReleaser,
-        NPMReleaser
-    ]
-    releasers_cls = filter(lambda r: r.detect(), all_releasers_cls)
-    releasers = map(lambda r: r(), releasers_cls)
 
-    if len(releasers) == 0:
-        click.echo('Project doesn\'t use any supported releasers.')
-        exit(1)
-
-    check_versions_are_same(releasers)
+    releasers = determine_releasers()
 
     if version in ('major', 'minor', 'patch'):
         version = bump_version(releasers[0].determine_current_version(), version)
@@ -93,9 +81,30 @@ def release(version, dry_run, bump, pull_request, dependents):
         map(lambda x: update_dependent(x, version, url), config['dependents'])
 
 
+def determine_releasers():
+    """
+    Finds and initialises all of the releasers for the current project.
+    """
+    all_releasers_cls = [
+        VersionFileReleaser,
+        PythonReleaser,
+        CocoaPodsReleaser,
+        NPMReleaser
+    ]
+    releasers_cls = filter(lambda r: r.detect(), all_releasers_cls)
+    releasers = map(lambda r: r(), releasers_cls)
+
+    if len(releasers) == 0:
+        click.echo('Project doesn\'t use any supported releasers.')
+        exit(1)
+
+    check_versions_are_same(releasers)
+    return releasers
+
+
 def check_versions_are_same(releasers):
     """
-    Determine if anyr eleasers have inconsistent versions
+    Determine if any releasers have inconsistent versions
     """
 
     version = None
