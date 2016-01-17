@@ -7,6 +7,7 @@ import ConfigParser
 from StringIO import StringIO
 
 import click
+from click.exceptions import MissingParameter
 import yaml
 from semantic_version import Version
 
@@ -18,19 +19,12 @@ from maintain.release.npm import NPMReleaser
 
 
 @click.command()
-@click.argument('version')
+@click.argument('version', required=False)
 @click.option('--dry-run/--no-dry-run', default=False)
 @click.option('--bump/--no-bump', default=True)
 @click.option('--pull-request/--no-pull-request', default=False)
 @click.option('--dependents/--no-dependents', default=True)
 def release(version, dry_run, bump, pull_request, dependents):
-    if version not in ('major', 'minor', 'patch'):
-        try:
-            version = Version(version)
-        except ValueError as e:
-            click.echo('{} is not a valid semantic version.'.format(version), err=True)
-            exit(1)
-
     if pull_request and not cmd_exists('hub'):
         click.echo('Missing dependency for hub: https://github.com/github/hub.' +
                    ' Please install `hub` and try again.')
@@ -45,8 +39,26 @@ def release(version, dry_run, bump, pull_request, dependents):
 
     releasers = determine_releasers()
 
-    if version in ('major', 'minor', 'patch'):
-        version = bump_version(releasers[0].determine_current_version(), version)
+    if not version and bump:
+        raise MissingParameter(param_hint='version', param_type='argument')
+    elif version in ('major', 'minor', 'patch'):
+        if bump:
+            version = bump_version(releasers[0].determine_current_version(), version)
+        else:
+            releasers[0].determine_current_version()
+    else:
+        try:
+            version = Version(version)
+        except ValueError as e:
+            click.echo('{} is not a valid semantic version.'.format(version), err=True)
+            exit(1)
+
+    if not bump:
+        current_version = releasers[0].determine_current_version()
+        if current_version != version:
+            click.echo('--no-bump was used, however the supplied version ' +
+                       'is not equal to current version {} != {}'.format(current_version, version))
+            exit(1)
 
     git_check_repository()
     git_check_branch()
