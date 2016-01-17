@@ -28,5 +28,5 @@ class NPMReleaser(Releaser):
             fp.write('\n')
 
     def release(self):
-        invoke(['npm', 'release'])
+        invoke(['npm', 'publish'])
 
