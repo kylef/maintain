@@ -36,7 +36,6 @@ def release(version, dry_run, bump, pull_request, dependents):
     else:
         config = {}
 
-
     releasers = determine_releasers()
 
     if not version and bump:
@@ -71,10 +70,14 @@ def release(version, dry_run, bump, pull_request, dependents):
             branch = 'release-{}'.format(version)
             invoke(['git', 'checkout', '-b', branch])
 
+        execute_hooks('bump', 'pre', config)
+
         map(lambda r: r.bump(version), releasers)
         click.echo('Committing and tagging {}'.format(version))
         message = 'Release {}'.format(version)
         invoke(['git', 'commit', '-a', '-m', message])
+
+        execute_hooks('bump', 'post', config)
 
         if not dry_run:
             invoke(['git', 'push', 'origin', branch])
@@ -82,10 +85,14 @@ def release(version, dry_run, bump, pull_request, dependents):
                 invoke(['hub', 'pull-request', '-m', message])
 
     if not dry_run and not pull_request:
+        execute_hooks('publish', 'pre', config)
+
         invoke(['git', 'tag', '-a', str(version), '-m', 'Release {}'.format(version)])
         invoke(['git', 'push', 'origin', str(version)])
 
         map(lambda r: r.release(), releasers)
+
+        execute_hooks('publish', 'post', config)
 
     if dependents and not pull_request and 'dependents' in config:
         # TODO dry run
@@ -227,3 +234,15 @@ def update_dependent(dependent, version, source_url):
             invoke(['git', 'push', 'origin', branch])
             invoke(['hub', 'pull-request', '-m', message])
 
+
+def execute_hooks(phase, action, config):
+    release_config = config.get('release', {})
+    phase_config = release_config.get(phase, {})
+    hooks = phase_config.get(action, [])
+
+    if len(hooks) > 0:
+        click.echo('Running {} {} hooks'.format(phase, action))
+
+        for hook in hooks:
+            click.echo('- ' + hook)
+            subprocess.check_output(hook, shell=True)
