@@ -1,0 +1,32 @@
+{
+  "name": "drafter",
+  "version": "0.2.6",
+  "author": "Apiary.io <support@apiary.io>",
+  "description": "Snow Crash parser harness",
+  "license": "MIT",
+  "main": "lib/drafter.js",
+  "bin": {
+    "drafter": "bin/drafter"
+  },
+  "repository": "apiaryio/drafter.js",
+  "engines": {
+    "node": ">= 0.10.x"
+  },
+  "scripts": {
+    "test": "scripts/test",
+    "prepublish": "scripts/build"
+  },
+  "dependencies": {
+    "async": "~0.9.0",
+    "boutique": "~0.1.7",
+    "deep-equal": "1.0.x",
+    "deepcopy": "0.4.x",
+    "protagonist": "~0.19.3",
+    "yargs": "~1.3.3"
+  },
+  "devDependencies": {
+    "coffee-script": "~1.7.1",
+    "chai": "~1.10.0",
+    "mocha": "~2.0.1"
+  }
+}

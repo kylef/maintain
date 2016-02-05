@@ -18,6 +18,8 @@ setup(
     },
     install_requires=[
         'click',
+        'semantic_version',
+        'pyyaml',
     ],
     author='Kyle Fuller',
     author_email='kyle@fuller.li',
