@@ -16,6 +16,10 @@ class temp_directory(object):
 
 
 def touch(filename, contents=''):
+    path, _ = os.path.split(filename)
+    if len(path) > 0:
+        os.makedirs(path)
+
     with open(filename, 'w') as fp:
         fp.write(contents)
 

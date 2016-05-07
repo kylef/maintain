@@ -16,6 +16,7 @@ from maintain.release.version_file import VersionFileReleaser
 from maintain.release.python import PythonReleaser
 from maintain.release.cocoapods import CocoaPodsReleaser
 from maintain.release.npm import NPMReleaser
+from maintain.release.c import CReleaser
 
 
 @click.command()
@@ -108,7 +109,8 @@ def determine_releasers():
         VersionFileReleaser,
         PythonReleaser,
         CocoaPodsReleaser,
-        NPMReleaser
+        NPMReleaser,
+        CReleaser,
     ]
     releasers_cls = filter(lambda r: r.detect(), all_releasers_cls)
     releasers = map(lambda r: r(), releasers_cls)

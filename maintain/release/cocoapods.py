@@ -88,7 +88,6 @@ class CocoaPodsReleaser(Releaser):
             content = self.RUBY_SUB_VERSION_REGEX.sub(replace, fp.read(), count=1)
 
         with open(self.podspec, 'w') as fp:
-            print(content)
             fp.write(content)
 
     def release(self):

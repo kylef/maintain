@@ -1,0 +1,8 @@
+#ifndef NODE_VERSION_H
+#define NODE_VERSION_H
+
+#define NODE_VERSION_MAJOR 1
+#define NODE_VERSION_MINOR 2
+#define NODE_VERSION_PATCH 0
+
+#endif
