@@ -12,11 +12,7 @@ import yaml
 from semantic_version import Version
 
 from maintain.process import invoke, temp_directory, chdir
-from maintain.release.version_file import VersionFileReleaser
-from maintain.release.python import PythonReleaser
-from maintain.release.cocoapods import CocoaPodsReleaser
-from maintain.release.npm import NPMReleaser
-from maintain.release.c import CReleaser
+from maintain.release.aggregate import AggregateReleaser
 
 
 @click.command()
@@ -37,15 +33,15 @@ def release(version, dry_run, bump, pull_request, dependents):
     else:
         config = {}
 
-    releasers = determine_releasers()
+    releaser = AggregateReleaser()
 
     if not version and bump:
         raise MissingParameter(param_hint='version', param_type='argument')
     elif version in ('major', 'minor', 'patch'):
         if bump:
-            version = bump_version(releasers[0].determine_current_version(), version)
+            version = bump_version(releaser.determine_current_version(), version)
         else:
-            releasers[0].determine_current_version()
+            releaser.determine_current_version()
     else:
         try:
             version = Version(version)
@@ -54,7 +50,7 @@ def release(version, dry_run, bump, pull_request, dependents):
             exit(1)
 
     if not bump:
-        current_version = releasers[0].determine_current_version()
+        current_version = releaser.determine_current_version()
         if current_version != version:
             click.echo('--no-bump was used, however the supplied version ' +
                        'is not equal to current version {} != {}'.format(current_version, version))
@@ -73,7 +69,7 @@ def release(version, dry_run, bump, pull_request, dependents):
 
         execute_hooks('bump', 'pre', config)
 
-        map(lambda r: r.bump(version), releasers)
+        releaser.bump(version)
         click.echo('Committing and tagging {}'.format(version))
         message = 'Release {}'.format(version)
         invoke(['git', 'commit', '-a', '-m', message])
@@ -91,7 +87,7 @@ def release(version, dry_run, bump, pull_request, dependents):
         invoke(['git', 'tag', '-a', str(version), '-m', 'Release {}'.format(version)])
         invoke(['git', 'push', 'origin', str(version)])
 
-        map(lambda r: r.release(), releasers)
+        releaser.release()
 
         execute_hooks('publish', 'post', config)
 
@@ -99,48 +95,6 @@ def release(version, dry_run, bump, pull_request, dependents):
         # TODO dry run
         url = subprocess.check_output('git config --get remote.origin.url', shell=True).strip()
         map(lambda x: update_dependent(x, version, url), config['dependents'])
-
-
-def determine_releasers():
-    """
-    Finds and initialises all of the releasers for the current project.
-    """
-    all_releasers_cls = [
-        VersionFileReleaser,
-        PythonReleaser,
-        CocoaPodsReleaser,
-        NPMReleaser,
-        CReleaser,
-    ]
-    releasers_cls = filter(lambda r: r.detect(), all_releasers_cls)
-    releasers = map(lambda r: r(), releasers_cls)
-
-    if len(releasers) == 0:
-        click.echo('Project doesn\'t use any supported releasers.')
-        exit(1)
-
-    check_versions_are_same(releasers)
-    return releasers
-
-
-def check_versions_are_same(releasers):
-    """
-    Determine if any releasers have inconsistent versions
-    """
-
-    version = None
-    releaser_name = None
-
-    for releaser in releasers:
-        next_version = releaser.determine_current_version()
-
-        if version and version != next_version:
-            click.echo('Inconsistent versions, {} is at {} but {} is at {}.'.format(
-                       releaser_name, version, releaser.name, next_version))
-            exit(1)
-
-        version = next_version
-        releaser_name = releaser.name
 
 
 def bump_version(version, bump):
