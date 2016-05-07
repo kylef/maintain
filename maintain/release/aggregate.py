@@ -8,6 +8,7 @@ from maintain.release.python import PythonReleaser
 from maintain.release.cocoapods import CocoaPodsReleaser
 from maintain.release.npm import NPMReleaser
 from maintain.release.c import CReleaser
+from maintain.release.changelog import ChangelogReleaser
 
 
 class AggregateReleaser(Releaser):
@@ -23,6 +24,7 @@ class AggregateReleaser(Releaser):
             CocoaPodsReleaser,
             NPMReleaser,
             CReleaser,
+            ChangelogReleaser,
         ]
 
     @classmethod

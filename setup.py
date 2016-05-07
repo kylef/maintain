@@ -20,6 +20,7 @@ setup(
         'click',
         'semantic_version',
         'pyyaml',
+        'commonmark',
     ],
     author='Kyle Fuller',
     author_email='kyle@fuller.li',
