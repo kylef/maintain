@@ -46,8 +46,7 @@ def release(version, dry_run, bump, pull_request, dependents):
         try:
             version = Version(version)
         except ValueError as e:
-            click.echo('{} is not a valid semantic version.'.format(version), err=True)
-            exit(1)
+            raise click.BadParameter('{} is not a semantic version'.format(version))
 
     if not bump:
         current_version = releaser.determine_current_version()
