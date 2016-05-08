@@ -1,0 +1,7 @@
+# Testing
+mock
+
+# Documentation
+sphinx
+sphinx-autobuild
+recommonmark
