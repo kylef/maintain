@@ -1,4 +1,5 @@
 # Testing
+nose
 mock
 
 # Documentation
