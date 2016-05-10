@@ -5,4 +5,5 @@ mock
 # Documentation
 sphinx
 sphinx-autobuild
-recommonmark
+# Disabled: depends on incompatible version of commonmark
+# recommonmark
