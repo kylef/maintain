@@ -23,13 +23,16 @@ class ChangelogReleaser(Releaser):
             return Version(release.name)
 
     def determine_next_version(self):
+        current_version = self.determine_current_version()
+        if current_version.prerelease or current_version.build:
+            return None
+
         changelog = parse_changelog()
 
         for release in changelog.releases:
             if release.name != 'Master':
                 continue
 
-            current_version = self.determine_current_version()
             breaking = release.find_section('Breaking')
             enhancements = release.find_section('Enhancements')
             bug_fixes = release.find_section('Bug Fixes')

@@ -42,6 +42,10 @@ def release(version, dry_run, bump, pull_request, dependents):
 
     if not version and bump:
         raise MissingParameter(param_hint='version', param_type='argument')
+    elif version == 'semver':
+        version = releaser.determine_next_version()
+        if not version:
+            raise Exception('Could not determine the next semantic version.')
     elif version in ('major', 'minor', 'patch'):
         if bump:
             version = bump_version(releaser.determine_current_version(), version)

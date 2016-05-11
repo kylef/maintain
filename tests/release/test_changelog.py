@@ -42,6 +42,15 @@ class ChangelogReleaserTestCase(unittest.TestCase):
             version = ChangelogReleaser().determine_next_version()
             self.assertEqual(version, Version('1.0.1'))
 
+    def test_determine_next_version_prerelease(self):
+        fixture_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'fixtures')
+        changelog = os.path.join(fixture_path, 'CHANGELOG-NEXT-PRERELEASE.md')
+
+        with temp_directory():
+            shutil.copyfile(changelog, 'CHANGELOG.md')
+            version = ChangelogReleaser().determine_next_version()
+            self.assertIsNone(version)
+
     def test_determine_next_version_minor(self):
         fixture_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'fixtures')
         changelog = os.path.join(fixture_path, 'CHANGELOG-NEXT-MINOR.md')
