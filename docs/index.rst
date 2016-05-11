@@ -28,6 +28,9 @@ the release and push it to the respective package manager.
 Maintain allows you to specify the `major`, `minor` or `patch` to automatically
 bump the respective version number, or you can explicitly specify a version.
 
+You may also specify `semver` as the version to automatically determine the
+next semantic version. This is not supported on all releasers.
+
 Pull-request
 ~~~~~~~~~~~~
 

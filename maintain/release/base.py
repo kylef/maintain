@@ -22,6 +22,12 @@ class Releaser(object):
         """
         raise NotImplemented
 
+    def determine_next_version(self):
+        """
+        Called to determine the next version number.
+        """
+        return None
+
     def bump(self, new_version):
         """
         Called to bump the version number in the project.

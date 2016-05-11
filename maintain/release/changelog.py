@@ -22,6 +22,35 @@ class ChangelogReleaser(Releaser):
 
             return Version(release.name)
 
+    def determine_next_version(self):
+        current_version = self.determine_current_version()
+        if current_version.prerelease or current_version.build:
+            return None
+
+        changelog = parse_changelog()
+
+        for release in changelog.releases:
+            if release.name != 'Master':
+                continue
+
+            breaking = release.find_section('Breaking')
+            enhancements = release.find_section('Enhancements')
+            bug_fixes = release.find_section('Bug Fixes')
+
+            if breaking and current_version.major == 0:
+                return current_version.next_minor()
+
+            if breaking:
+                return current_version.next_major()
+
+            if enhancements:
+                return current_version.next_minor()
+
+            if bug_fixes:
+                return current_version.next_patch()
+
+        return None
+
     def bump(self, new_version):
         changelog = parse_changelog()
 
@@ -56,6 +85,11 @@ class Release(object):
         self.name = name
         self.release_date = release_date
         self.sections = sections or []
+
+    def find_section(self, name):
+        for section in self.sections:
+            if section.name == name:
+                return section
 
 
 class Section(object):
@@ -123,6 +157,9 @@ def ast_to_changelog(node):
         elif heading.level == 3:
             if not release:
                 raise Exception('Level 3 heading was not found within a release (level 2 heading).')
+
+            if heading.title not in ('Enhancements', 'Breaking', 'Bug Fixes'):
+                raise Exception('Changelog section {} is not supported.'.format(heading.title))
 
             release.sections.append(Section(heading.title))
 

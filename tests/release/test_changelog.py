@@ -33,6 +33,51 @@ class ChangelogReleaserTestCase(unittest.TestCase):
             version = ChangelogReleaser().determine_current_version()
             self.assertEqual(version, Version('1.0.0'))
 
+    def test_determine_next_version_patch(self):
+        fixture_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'fixtures')
+        changelog = os.path.join(fixture_path, 'CHANGELOG.md')
+
+        with temp_directory():
+            shutil.copyfile(changelog, 'CHANGELOG.md')
+            version = ChangelogReleaser().determine_next_version()
+            self.assertEqual(version, Version('1.0.1'))
+
+    def test_determine_next_version_prerelease(self):
+        fixture_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'fixtures')
+        changelog = os.path.join(fixture_path, 'CHANGELOG-NEXT-PRERELEASE.md')
+
+        with temp_directory():
+            shutil.copyfile(changelog, 'CHANGELOG.md')
+            version = ChangelogReleaser().determine_next_version()
+            self.assertIsNone(version)
+
+    def test_determine_next_version_minor(self):
+        fixture_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'fixtures')
+        changelog = os.path.join(fixture_path, 'CHANGELOG-NEXT-MINOR.md')
+
+        with temp_directory():
+            shutil.copyfile(changelog, 'CHANGELOG.md')
+            version = ChangelogReleaser().determine_next_version()
+            self.assertEqual(version, Version('1.1.0'))
+
+    def test_determine_next_version_major(self):
+        fixture_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'fixtures')
+        changelog = os.path.join(fixture_path, 'CHANGELOG-NEXT-MAJOR.md')
+
+        with temp_directory():
+            shutil.copyfile(changelog, 'CHANGELOG.md')
+            version = ChangelogReleaser().determine_next_version()
+            self.assertEqual(version, Version('2.0.0'))
+
+    def test_determine_next_version_major_unstable(self):
+        fixture_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'fixtures')
+        changelog = os.path.join(fixture_path, 'CHANGELOG-NEXT-MAJOR-UNSTABLE.md')
+
+        with temp_directory():
+            shutil.copyfile(changelog, 'CHANGELOG.md')
+            version = ChangelogReleaser().determine_next_version()
+            self.assertEqual(version, Version('0.2.0'))
+
     @mock.patch('maintain.release.changelog.date', FakeDate)
     def test_bumps_master(self):
         from datetime import date

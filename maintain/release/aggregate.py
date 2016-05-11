@@ -62,6 +62,24 @@ class AggregateReleaser(Releaser):
     def determine_current_version(self):
         return self.releasers[0].determine_current_version()
 
+    def determine_next_version(self):
+        version = None
+        releaser_name = None
+
+        for releaser in self.releasers:
+            next_version = releaser.determine_next_version()
+            if not next_version:
+                continue
+
+            if version and version != next_version:
+                raise Exception('Inconsistent next versions, {} is at {} but {} is at {}.'.format(
+                                releaser_name, version, releaser.name, next_version))
+
+            version = next_version
+            releaser_name = releaser.name
+
+        return version
+
     def bump(self, new_version):
         for releaser in self.releasers:
             releaser.bump(new_version)
