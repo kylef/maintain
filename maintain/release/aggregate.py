@@ -52,7 +52,7 @@ class AggregateReleaser(Releaser):
         for releaser in self.releasers:
             next_version = releaser.determine_current_version()
 
-            if version and version != next_version:
+            if next_version and version and version != next_version:
                 raise Exception('Inconsistent versions, {} is at {} but {} is at {}.'.format(
                                 releaser_name, version, releaser.name, next_version))
 
