@@ -23,7 +23,7 @@ class CReleaser(Releaser):
         """
         Returns all the version headers in the project.
         """
-        return glob('src/version.h') + glob('include/*/version.h')
+        return glob('src/[Vv]ersion.h') + glob('include/*/[Vv]ersion.h')
 
     @classmethod
     def detect(cls):
