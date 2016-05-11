@@ -1,7 +1,3 @@
-import os
-
-from semantic_version import Version
-
 from maintain.release.base import Releaser
 from maintain.release.version_file import VersionFileReleaser
 from maintain.release.python import PythonReleaser
@@ -58,11 +54,10 @@ class AggregateReleaser(Releaser):
 
             if version and version != next_version:
                 raise Exception('Inconsistent versions, {} is at {} but {} is at {}.'.format(
-                           releaser_name, version, releaser.name, next_version))
+                                releaser_name, version, releaser.name, next_version))
 
             version = next_version
             releaser_name = releaser.name
-
 
     def determine_current_version(self):
         return self.releasers[0].determine_current_version()

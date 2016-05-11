@@ -92,4 +92,3 @@ class CocoaPodsReleaser(Releaser):
 
     def release(self):
         invoke(['pod', 'trunk', 'push', self.podspec])
-

@@ -34,7 +34,6 @@ class ChangelogReleaser(Releaser):
                 heading = '## {} ({})'.format(new_version, date.today().isoformat())
                 content = re.sub(r'^## Master$', heading, content, flags=re.MULTILINE)
 
-
                 with open('CHANGELOG.md', 'w') as fp:
                     fp.write(content)
             else:

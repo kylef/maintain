@@ -1,7 +1,4 @@
 import os
-from glob import glob
-import json
-import collections
 import subprocess
 
 try:
@@ -53,7 +50,7 @@ def release(version, dry_run, bump, pull_request, dependents):
     else:
         try:
             version = Version(version)
-        except ValueError as e:
+        except ValueError:
             raise click.BadParameter('{} is not a semantic version'.format(version))
 
     if not bump:
@@ -150,11 +147,13 @@ def git_load_config(filepath):
 def git_get_submodules():
     if os.path.exists('.gitmodules'):
         gitmodules = git_load_config('.gitmodules')
+
         def module(section):
             return (
                 gitmodules.get(section, 'path'),
                 gitmodules.get(section, 'url'),
             )
+
         return dict(map(module, gitmodules.sections()))
 
 
@@ -163,8 +162,9 @@ def github_create_pr(message):
 
 
 def cmd_exists(cmd):
-    return subprocess.call('type {}'.format(cmd), shell=True,
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE) == 0
+    result = subprocess.call('type {}'.format(cmd), shell=True,
+                             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    return result == 0
 
 
 def update_dependent(dependent, version, source_url):

@@ -13,12 +13,12 @@ class CocoaPodsReleaserTestCase(unittest.TestCase):
     # Detection
 
     def test_detects_ruby_podspec(self):
-        with temp_directory() as directory:
+        with temp_directory():
             touch('JSONWebToken.podspec')
             self.assertTrue(CocoaPodsReleaser.detect())
 
     def test_detects_json_podspec(self):
-        with temp_directory() as directory:
+        with temp_directory():
             touch('URITemplate.podspec.json')
             self.assertTrue(CocoaPodsReleaser.detect())
 
@@ -28,7 +28,7 @@ class CocoaPodsReleaserTestCase(unittest.TestCase):
         fixture_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'fixtures')
         podspec = os.path.join(fixture_path, 'JSONWebToken.podspec')
 
-        with temp_directory() as directory:
+        with temp_directory():
             shutil.copyfile(podspec, 'JSONWebToken.podspec')
             version = CocoaPodsReleaser().determine_current_version()
             self.assertEqual(version, Version('1.4.1'))
@@ -37,7 +37,7 @@ class CocoaPodsReleaserTestCase(unittest.TestCase):
         fixture_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'fixtures')
         podspec = os.path.join(fixture_path, 'URITemplate.podspec.json')
 
-        with temp_directory() as directory:
+        with temp_directory():
             shutil.copyfile(podspec, 'URITemplate.podspec.json')
             version = CocoaPodsReleaser().determine_current_version()
             self.assertEqual(version, Version('1.2.0'))
@@ -45,17 +45,17 @@ class CocoaPodsReleaserTestCase(unittest.TestCase):
     # Verify
 
     def test_passes_validation_with_json_spec(self):
-        with temp_directory() as directory:
+        with temp_directory():
             touch('URITemplate.podspec.json')
             CocoaPodsReleaser()
 
     def test_passes_validation_with_ruby_spec(self):
-        with temp_directory() as directory:
+        with temp_directory():
             touch('JSONWebToken.podspec')
             CocoaPodsReleaser()
 
     def test_fails_validation_with_multiple_podspecs(self):
-        with temp_directory() as directory:
+        with temp_directory():
             touch('URITemplate2.podspec.json')
             touch('URITemplate.podspec.json')
 
@@ -69,7 +69,7 @@ class CocoaPodsReleaserTestCase(unittest.TestCase):
         podspec = os.path.join(fixture_path, 'URITemplate.podspec.json')
         bumped_podspec = os.path.join(fixture_path, 'BumpedURITemplate.podspec.json')
 
-        with temp_directory() as directory:
+        with temp_directory():
             shutil.copyfile(podspec, 'URITemplate.podspec.json')
             CocoaPodsReleaser().bump('1.2.1')
             self.assertTrue(filecmp.cmp('URITemplate.podspec.json', bumped_podspec))
@@ -79,7 +79,7 @@ class CocoaPodsReleaserTestCase(unittest.TestCase):
         podspec = os.path.join(fixture_path, 'JSONWebToken.podspec')
         bumped_podspec = os.path.join(fixture_path, 'BumpedJSONWebToken.podspec')
 
-        with temp_directory() as directory:
+        with temp_directory():
             shutil.copyfile(podspec, 'JSONWebToken.podspec')
             CocoaPodsReleaser().bump('2.0.0')
             self.assertTrue(filecmp.cmp('JSONWebToken.podspec', bumped_podspec))

@@ -1,7 +1,4 @@
 import unittest
-import os
-import shutil
-import filecmp
 
 from semantic_version import Version
 
@@ -13,7 +10,7 @@ class VersionFileReleaserTestCase(unittest.TestCase):
     # Determine current version
 
     def test_detect_current_version(self):
-        with temp_directory() as directory:
+        with temp_directory():
             with open('VERSION', 'w') as fp:
                 fp.write('1.0.0\n')
 
@@ -23,14 +20,14 @@ class VersionFileReleaserTestCase(unittest.TestCase):
     # Detection
 
     def test_detects_version_file(self):
-        with temp_directory() as directory:
+        with temp_directory():
             touch('VERSION')
             self.assertTrue(VersionFileReleaser().detect())
 
     # Bumping
 
     def test_bumps_package_json(self):
-        with temp_directory() as directory:
+        with temp_directory():
             with open('VERSION', 'w') as fp:
                 fp.write('1.0.0\n')
 

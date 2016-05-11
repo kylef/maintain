@@ -22,5 +22,3 @@ def touch(filename, contents=''):
 
     with open(filename, 'w') as fp:
         fp.write(contents)
-
-

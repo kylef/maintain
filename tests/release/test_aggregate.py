@@ -1,7 +1,4 @@
 import unittest
-import os
-import shutil
-import filecmp
 
 from semantic_version import Version
 

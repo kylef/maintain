@@ -9,4 +9,3 @@ def cli():
 
 
 cli.add_command(release)
-

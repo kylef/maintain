@@ -20,7 +20,7 @@ class FakeDate(date):
 
 class ChangelogReleaserTestCase(unittest.TestCase):
     def test_detects_version_file(self):
-        with temp_directory() as directory:
+        with temp_directory():
             touch('CHANGELOG.md')
             self.assertTrue(ChangelogReleaser().detect())
 
@@ -28,7 +28,7 @@ class ChangelogReleaserTestCase(unittest.TestCase):
         fixture_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'fixtures')
         changelog = os.path.join(fixture_path, 'CHANGELOG.md')
 
-        with temp_directory() as directory:
+        with temp_directory():
             shutil.copyfile(changelog, 'CHANGELOG.md')
             version = ChangelogReleaser().determine_current_version()
             self.assertEqual(version, Version('1.0.0'))
@@ -42,7 +42,7 @@ class ChangelogReleaserTestCase(unittest.TestCase):
         changelog = os.path.join(fixture_path, 'CHANGELOG.md')
         bumped_changelog = os.path.join(fixture_path, 'BUMPED_CHANGELOG.md')
 
-        with temp_directory() as directory:
+        with temp_directory():
             shutil.copyfile(changelog, 'CHANGELOG.md')
-            version = ChangelogReleaser().bump('1.0.1')
+            ChangelogReleaser().bump('1.0.1')
             self.assertTrue(filecmp.cmp('CHANGELOG.md', bumped_changelog))

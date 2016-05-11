@@ -39,4 +39,3 @@ class temp_directory(object):
     def __exit__(self, typ, value, traceback):
         os.chdir(self.working_directory)
         shutil.rmtree(self.pathname)
-

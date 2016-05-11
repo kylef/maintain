@@ -1,6 +1,5 @@
 import unittest
 
-import click
 from click.testing import CliRunner
 
 from maintain.commands.release import release

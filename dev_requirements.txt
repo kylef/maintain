@@ -2,6 +2,9 @@
 nose
 mock
 
+# Linting
+flake8
+
 # Documentation
 sphinx
 sphinx-autobuild

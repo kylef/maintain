@@ -9,3 +9,4 @@ install:
 - pip install -r dev_requirements.txt
 script:
 - nosetests
+- flake8 maintain tests --ignore=E501 --exclude=tests/release/fixtures

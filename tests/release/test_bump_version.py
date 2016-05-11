@@ -1,4 +1,3 @@
-import os
 import unittest
 
 from semantic_version import Version
@@ -11,12 +10,12 @@ class BumpVersionTestCase(unittest.TestCase):
     # Detection
 
     def test_detects_version_file(self):
-        with temp_directory() as directory:
+        with temp_directory():
             touch('VERSION')
             self.assertTrue(VersionFileReleaser.detect())
 
     def test_doesnt_detect_without_version_file(self):
-        with temp_directory() as directory:
+        with temp_directory():
             self.assertFalse(VersionFileReleaser.detect())
 
     # Determing current version
@@ -24,7 +23,7 @@ class BumpVersionTestCase(unittest.TestCase):
     def test_determine_current_version(self):
         releaser = VersionFileReleaser()
 
-        with temp_directory() as directory:
+        with temp_directory():
             touch('VERSION', '0.2.6')
             version = releaser.determine_current_version()
             self.assertEqual(version, Version('0.2.6'))
@@ -34,7 +33,7 @@ class BumpVersionTestCase(unittest.TestCase):
     def test_bumps_version_file(self):
         releaser = VersionFileReleaser()
 
-        with temp_directory() as directory:
+        with temp_directory():
             touch('VERSION', '2.2.12')
             releaser.bump('2.3.0')
 

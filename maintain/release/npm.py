@@ -29,4 +29,3 @@ class NPMReleaser(Releaser):
 
     def release(self):
         invoke(['npm', 'publish'])
-

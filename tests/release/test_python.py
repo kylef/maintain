@@ -16,7 +16,7 @@ class PythonReleaserTestCase(unittest.TestCase):
         fixture_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'fixtures')
         package = os.path.join(fixture_path, 'setup.py')
 
-        with temp_directory() as directory:
+        with temp_directory():
             shutil.copyfile(package, 'setup.py')
             version = PythonReleaser().determine_current_version()
             self.assertEqual(version, Version('0.1.0'))
@@ -24,7 +24,7 @@ class PythonReleaserTestCase(unittest.TestCase):
     # Detection
 
     def test_detects_package_json(self):
-        with temp_directory() as directory:
+        with temp_directory():
             touch('setup.py')
             self.assertTrue(PythonReleaser.detect())
 
@@ -35,7 +35,7 @@ class PythonReleaserTestCase(unittest.TestCase):
         package = os.path.join(fixture_path, 'setup.py')
         bumped_package = os.path.join(fixture_path, 'bumped-setup.py')
 
-        with temp_directory() as directory:
+        with temp_directory():
             shutil.copyfile(package, 'setup.py')
             PythonReleaser().bump('1.0.0')
             self.assertTrue(filecmp.cmp('setup.py', bumped_package))

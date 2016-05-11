@@ -1,4 +1,3 @@
-import os
 import re
 from glob import glob
 
@@ -49,8 +48,8 @@ class CReleaser(Releaser):
         minor = self.MINOR_VERSION_REGEX.search(contents)
         patch = self.PATCH_VERSION_REGEX.search(contents)
         if major and minor and patch:
-            version = '{}.{}.{}'.format(
-                    major.groups()[-1], minor.groups()[-1], patch.groups()[-1])
+            version = '{}.{}.{}'.format(major.groups()[-1], minor.groups()[-1],
+                                        patch.groups()[-1])
             return Version(version)
         else:
             raise Exception('Invalid version header ({}), doesn\'t contain ' +
