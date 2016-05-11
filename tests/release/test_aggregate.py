@@ -49,7 +49,7 @@ class AggregateReleaserTestCase(unittest.TestCase):
         releaser.bump('2.0.0')
 
         versions = map(lambda r: r.determine_current_version(), releasers)
-        self.assertEqual(versions, [Version('2.0.0'), Version('2.0.0')])
+        self.assertEqual(list(versions), [Version('2.0.0'), Version('2.0.0')])
 
     def test_releasing(self):
         releasers = [
@@ -60,5 +60,5 @@ class AggregateReleaserTestCase(unittest.TestCase):
         releaser = AggregateReleaser(releasers=releasers)
         releaser.release()
 
-        released = map(lambda r: r.is_released, releasers)
+        released = list(map(lambda r: r.is_released, releasers))
         self.assertEqual(released, [True, True])

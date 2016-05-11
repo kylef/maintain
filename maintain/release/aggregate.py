@@ -68,7 +68,9 @@ class AggregateReleaser(Releaser):
         return self.releasers[0].determine_current_version()
 
     def bump(self, new_version):
-        map(lambda r: r.bump(new_version), self.releasers)
+        for releaser in self.releasers:
+            releaser.bump(new_version)
 
     def release(self):
-        map(lambda r: r.release(), self.releasers)
+        for releaser in self.releasers:
+            releaser.release()

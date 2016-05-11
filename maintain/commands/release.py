@@ -3,8 +3,16 @@ from glob import glob
 import json
 import collections
 import subprocess
-import ConfigParser
-from StringIO import StringIO
+
+try:
+    from io import StringIO
+except ImportError:
+    from StringIO import StringIO
+
+try:
+    from configparser import SafeConfigParser
+except ImportError:
+    from ConfigParser import SafeConfigParser
 
 import click
 from click.exceptions import MissingParameter
@@ -130,7 +138,7 @@ def git_check_dirty():
 
 
 def git_load_config(filepath):
-    parser = ConfigParser.SafeConfigParser()
+    parser = SafeConfigParser()
 
     with open(filepath) as fp:
         contents = ''.join([line.lstrip() for line in fp.readlines()])
