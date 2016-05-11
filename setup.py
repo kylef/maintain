@@ -13,7 +13,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'maintain = maintain:cli',
+            'maintain = maintain.commands:cli',
         ]
     },
     install_requires=[
