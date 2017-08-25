@@ -101,7 +101,7 @@ def release(version, dry_run, bump, pull_request, dependents):
 
     if dependents and not pull_request and 'dependents' in config:
         # TODO dry run
-        url = subprocess.check_output('git config --get remote.origin.url', shell=True).strip()
+        url = subprocess.check_output('git config --get remote.origin.url', shell=True).decode('utf-8').strip()
         map(lambda x: update_dependent(x, version, url), config['dependents'])
 
 
@@ -125,7 +125,7 @@ def git_update():
 
 
 def git_check_branch():
-    branch = subprocess.check_output('git symbolic-ref HEAD 2>/dev/null', shell=True).strip().rpartition('/')[2]
+    branch = subprocess.check_output('git symbolic-ref HEAD 2>/dev/null', shell=True).decode('utf-8').strip().rpartition('/')[2]
     if branch != 'master':
         # TODO: Support releasing from stable/hotfix branches
         click.echo('You need to be on the `master` branch in order to do a release.')

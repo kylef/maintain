@@ -31,7 +31,7 @@ class AggregateReleaser(Releaser):
 
         releasers_cls = filter(lambda r: r.detect(), cls.releasers())
         releasers = map(lambda r: r(), releasers_cls)
-        return releasers
+        return list(releasers)
 
     @classmethod
     def detect(cls):
