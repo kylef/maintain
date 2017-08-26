@@ -65,7 +65,10 @@ def release(version, dry_run, bump, pull_request):
 
     git_check_repository()
     git_check_branch()
-    git_update()
+
+    if git_has_origin_remote():
+        git_update()
+
     git_check_dirty()
 
     if bump:
@@ -84,15 +87,22 @@ def release(version, dry_run, bump, pull_request):
         execute_hooks('bump', 'post', config)
 
         if not dry_run:
-            invoke(['git', 'push', 'origin', branch])
+            if git_has_origin_remote():
+                invoke(['git', 'push', 'origin', branch])
+
             if pull_request:
+                if not git_has_origin_remote():
+                    raise Exception('Used --pull-request and no git remote')
+
                 invoke(['hub', 'pull-request', '-m', message])
 
     if not dry_run and not pull_request:
         execute_hooks('publish', 'pre', config)
 
         invoke(['git', 'tag', '-a', str(version), '-m', 'Release {}'.format(version)])
-        invoke(['git', 'push', 'origin', str(version)])
+
+        if git_has_origin_remote():
+            invoke(['git', 'push', 'origin', str(version)])
 
         releaser.release()
 
@@ -130,6 +140,15 @@ def git_check_dirty():
     error = 'You need to have a clean check out. You have un-committed local changes.'
     invoke(['git', 'diff', '--quiet'], error)
     invoke(['git', 'diff', '--cached'], error)
+
+
+def git_has_origin_remote():
+    try:
+        subprocess.check_output('git remote get-url origin', shell=True).strip().decode('utf-8')
+    except subprocess.CalledProcessError:
+        return False
+
+    return True
 
 
 def git_load_config(filepath):
