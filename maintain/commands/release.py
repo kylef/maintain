@@ -25,8 +25,7 @@ from maintain.release.aggregate import AggregateReleaser
 @click.option('--dry-run/--no-dry-run', default=False)
 @click.option('--bump/--no-bump', default=True)
 @click.option('--pull-request/--no-pull-request', default=False)
-@click.option('--dependents/--no-dependents', default=True)
-def release(version, dry_run, bump, pull_request, dependents):
+def release(version, dry_run, bump, pull_request):
     if pull_request and not cmd_exists('hub'):
         click.echo('Missing dependency for hub: https://github.com/github/hub.' +
                    ' Please install `hub` and try again.')
@@ -99,11 +98,6 @@ def release(version, dry_run, bump, pull_request, dependents):
 
         execute_hooks('publish', 'post', config)
 
-    if dependents and not pull_request and 'dependents' in config:
-        # TODO dry run
-        url = subprocess.check_output('git config --get remote.origin.url', shell=True).decode('utf-8').strip()
-        map(lambda x: update_dependent(x, version, url), config['dependents'])
-
 
 def bump_version(version, bump):
     if version.prerelease or version.build:
@@ -169,37 +163,6 @@ def cmd_exists(cmd):
     result = subprocess.call('type {}'.format(cmd), shell=True,
                              stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     return result == 0
-
-
-def update_dependent(dependent, version, source_url):
-    with temp_directory():
-        invoke(['git', 'clone', dependent, 'repository', '--depth', '1'])
-
-        with chdir('repository'):
-            # Check for submodules
-            submodules = git_get_submodules()
-            if not submodules:
-                return  # TODO Only git submodules are supported
-
-            module = next(iter(filter(lambda m: m[1] == source_url, submodules.items())), None)
-            if not module:
-                return
-
-            invoke(['git', 'submodule', 'update', '--init'])
-
-            with chdir(module[0]):
-                invoke(['git', 'checkout', str(version)])
-
-            # TODO branch name
-            branch = 'update'
-            invoke(['git', 'checkout', '-b', branch])
-
-            # TODO commit message
-            package = 'Unknown'
-            message = '[{}] Update to {}'.format(package, version)
-            invoke(['git', 'commit', '-a', '-m', message])
-            invoke(['git', 'push', 'origin', branch])
-            invoke(['hub', 'pull-request', '-m', message])
 
 
 def execute_hooks(phase, action, config):
