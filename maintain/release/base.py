@@ -31,6 +31,8 @@ class Releaser(object):
     def bump(self, new_version):
         """
         Called to bump the version number in the project.
+        After called, ``determine_current_version()`` should return
+        the new version.
         """
 
         raise NotImplemented

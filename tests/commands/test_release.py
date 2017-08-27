@@ -37,6 +37,9 @@ class ReleaseCommandTestCase(unittest.TestCase):
             result = self.runner.invoke(release, ['2.0.0'])
             self.assertEqual(result.exit_code, 0)
 
+            with open('VERSION') as fp:
+                self.assertEqual(fp.read(), '2.0.0\n')
+
             # Created Commit
             log = subprocess.check_output('git log --format=oneline', shell=True).decode('utf-8')
             sha1, commit = log.split('\n')[0].split(' ', 1)
@@ -45,3 +48,7 @@ class ReleaseCommandTestCase(unittest.TestCase):
             # Created Tag
             tags = subprocess.check_output('git tag', shell=True).decode('utf-8').split('\n')
             self.assertEqual(tags[0], '2.0.0')
+
+            # No Staged Changes
+            subprocess.check_output('git diff --quiet', shell=True)
+            subprocess.check_output('git diff --cached --quiet', shell=True)

@@ -18,6 +18,7 @@ from semantic_version import Version
 
 from maintain.process import invoke, temp_directory, chdir
 from maintain.release.aggregate import AggregateReleaser
+from maintain.release.git import GitReleaser
 
 
 @click.command()
@@ -63,13 +64,7 @@ def release(version, dry_run, bump, pull_request):
                        'is not equal to current version {} != {}'.format(current_version, version))
             exit(1)
 
-    git_check_repository()
-    git_check_branch()
-
-    if git_has_origin_remote():
-        git_update()
-
-    git_check_dirty()
+    git_releaser = GitReleaser()
 
     if bump:
         branch = 'master'
@@ -80,9 +75,7 @@ def release(version, dry_run, bump, pull_request):
         execute_hooks('bump', 'pre', config)
 
         releaser.bump(version)
-        click.echo('Committing and tagging {}'.format(version))
-        message = 'Release {}'.format(version)
-        invoke(['git', 'commit', '-a', '-m', message])
+        git_releaser.bump(version)
 
         execute_hooks('bump', 'post', config)
 
@@ -99,11 +92,7 @@ def release(version, dry_run, bump, pull_request):
     if not dry_run and not pull_request:
         execute_hooks('publish', 'pre', config)
 
-        invoke(['git', 'tag', '-a', str(version), '-m', 'Release {}'.format(version)])
-
-        if git_has_origin_remote():
-            invoke(['git', 'push', 'origin', str(version)])
-
+        git_releaser.release(version)
         releaser.release()
 
         execute_hooks('publish', 'post', config)
@@ -118,30 +107,6 @@ def bump_version(version, bump):
     return getattr(version, 'next_{}'.format(bump))()
 
 
-def git_check_repository():
-    if not os.path.exists('.git'):
-        click.echo('release should be ran within a git repository')
-        exit(1)
-
-
-def git_update():
-    invoke(['git', 'pull', '--no-rebase'])
-
-
-def git_check_branch():
-    branch = subprocess.check_output('git symbolic-ref HEAD 2>/dev/null', shell=True).decode('utf-8').strip().rpartition('/')[2]
-    if branch != 'master':
-        # TODO: Support releasing from stable/hotfix branches
-        click.echo('You need to be on the `master` branch in order to do a release.')
-        exit(1)
-
-
-def git_check_dirty():
-    error = 'You need to have a clean check out. You have un-committed local changes.'
-    invoke(['git', 'diff', '--quiet'], error)
-    invoke(['git', 'diff', '--cached'], error)
-
-
 def git_has_origin_remote():
     try:
         subprocess.check_output('git remote get-url origin', shell=True).strip().decode('utf-8')
@@ -149,29 +114,6 @@ def git_has_origin_remote():
         return False
 
     return True
-
-
-def git_load_config(filepath):
-    parser = SafeConfigParser()
-
-    with open(filepath) as fp:
-        contents = ''.join([line.lstrip() for line in fp.readlines()])
-        parser.readfp(StringIO(contents))
-
-    return parser
-
-
-def git_get_submodules():
-    if os.path.exists('.gitmodules'):
-        gitmodules = git_load_config('.gitmodules')
-
-        def module(section):
-            return (
-                gitmodules.get(section, 'path'),
-                gitmodules.get(section, 'url'),
-            )
-
-        return dict(map(module, gitmodules.sections()))
 
 
 def github_create_pr(message):
