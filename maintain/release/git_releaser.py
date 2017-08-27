@@ -24,8 +24,10 @@ class GitReleaser(Releaser):
             raise Exception('Git repository has unstaged changes.')
 
         if self.has_origin():
-            self.repo.remotes.origin.fetch('master')
-            git_update()
+            self.repo.remotes.origin.fetch()
+
+            if self.repo.remotes.origin.refs.master.commit != self.repo.head.ref.commit:
+                raise Exception('Master has unsynced changes.')
 
     def has_origin(self):
         try:

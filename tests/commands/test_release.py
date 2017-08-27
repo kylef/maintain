@@ -52,8 +52,6 @@ class ReleaseCommandTestCase(unittest.TestCase):
                     fp.write('1.0.0\n')
 
                 repo = Repo.init()
-
-                repo = Repo.init()
                 repo.index.add(['VERSION'])
                 repo.index.commit('Initial commit')
                 repo.create_remote('origin', url=bare_repo)

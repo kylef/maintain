@@ -1,9 +1,10 @@
 import unittest
 
 from semantic_version import Version
+from git import Repo
 
 from maintain.release.git_releaser import GitReleaser
-from ..utils import git_repo, touch
+from ..utils import git_bare_repo, git_repo, touch, temp_directory
 
 
 class GitReleaserTestCase(unittest.TestCase):
@@ -44,6 +45,36 @@ class GitReleaserTestCase(unittest.TestCase):
             repo.index.add(['README.md'])
 
             with self.assertRaises(Exception):
+                GitReleaser()
+
+    def test_errors_when_remote_has_changes(self):
+        with git_bare_repo() as bare_repo:
+            with git_repo() as repo:
+                touch('README.md')
+                repo.index.add(['README.md'])
+                repo.index.commit('Initial commit')
+                repo.create_remote('origin', url=bare_repo)
+                repo.remotes.origin.push(repo.refs.master)
+
+                with temp_directory() as path:
+                    clone = Repo(bare_repo).clone(path)
+                    touch('CHANGELOG.md')
+                    clone.index.add(['README.md'])
+                    clone.index.commit('Second commit')
+                    clone.remotes.origin.push(clone.refs.master)
+
+                with self.assertRaises(Exception):
+                    GitReleaser()
+
+    def test_init_with_remote(self):
+        with git_bare_repo() as bare_repo:
+            with git_repo() as repo:
+                touch('README.md')
+                repo.index.add(['README.md'])
+                repo.index.commit('Initial commit')
+                repo.create_remote('origin', url=bare_repo)
+                repo.remotes.origin.push(repo.refs.master)
+
                 GitReleaser()
 
     # Detection
