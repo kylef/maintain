@@ -5,6 +5,7 @@ from maintain.release.cocoapods import CocoaPodsReleaser
 from maintain.release.npm import NPMReleaser
 from maintain.release.c import CReleaser
 from maintain.release.changelog import ChangelogReleaser
+from maintain.release.git_releaser import GitReleaser
 from maintain.release.github import GitHubReleaser
 
 
@@ -22,6 +23,7 @@ class AggregateReleaser(Releaser):
             NPMReleaser,
             CReleaser,
             ChangelogReleaser,
+            GitReleaser,
             GitHubReleaser,
         ]
 

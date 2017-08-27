@@ -27,10 +27,10 @@ def release(version, dry_run, bump, pull_request):
     releaser = AggregateReleaser()
 
     if pull_request:
-        if not GitHubReleaser.detect():
-            raise Exception('Used --pull-request and no GitHub remote')
+        github_releaser = len(filter(lambda releaser: isinstance(releaser, GitHubReleaser), releaser.releasers))
 
-        GitHubReleaser()
+        if github_releaser == 0:
+            raise Exception('Used --pull-request and no GitHub remote')
 
     if not version and bump:
         raise MissingParameter(param_hint='version', param_type='argument')
@@ -56,7 +56,10 @@ def release(version, dry_run, bump, pull_request):
                        'is not equal to current version {} != {}'.format(current_version, version))
             exit(1)
 
-    git_releaser = GitReleaser()
+    try:
+        git_releaser = next(filter(lambda releaser: isinstance(releaser, GitReleaser), releaser.releasers))
+    except StopIteration:
+        git_releaser = None
 
     if bump:
         ref = git_releaser.repo.refs.master
@@ -66,10 +69,7 @@ def release(version, dry_run, bump, pull_request):
             git_releaser.repo.head.set_reference(ref)
 
         execute_hooks('bump', 'pre', config)
-
         releaser.bump(version)
-        git_releaser.bump(version)
-
         execute_hooks('bump', 'post', config)
 
         if not dry_run:
@@ -81,10 +81,7 @@ def release(version, dry_run, bump, pull_request):
 
     if not dry_run and not pull_request:
         execute_hooks('publish', 'pre', config)
-
-        git_releaser.release(version)
         releaser.release(version)
-
         execute_hooks('publish', 'post', config)
 
 
