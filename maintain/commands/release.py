@@ -6,7 +6,6 @@ from click.exceptions import MissingParameter
 import yaml
 from semantic_version import Version
 
-from maintain.process import invoke
 from maintain.release.aggregate import AggregateReleaser
 from maintain.release.git_releaser import GitReleaser
 from maintain.release.github import GitHubReleaser
@@ -26,11 +25,18 @@ def release(version, dry_run, bump, pull_request):
 
     releaser = AggregateReleaser()
 
-    if pull_request:
-        github_releaser = len(filter(lambda releaser: isinstance(releaser, GitHubReleaser), releaser.releasers))
+    try:
+        git_releaser = next(filter(lambda releaser: isinstance(releaser, GitReleaser), releaser.releasers))
+    except StopIteration:
+        git_releaser = None
 
-        if github_releaser == 0:
-            raise Exception('Used --pull-request and no GitHub remote')
+    try:
+        github_releaser = next(filter(lambda releaser: isinstance(releaser, GitHubReleaser), releaser.releasers))
+    except StopIteration:
+        github_releaser = None
+
+    if pull_request and not github_releaser:
+        raise Exception('Used --pull-request and no GitHub remote')
 
     if not version and bump:
         raise MissingParameter(param_hint='version', param_type='argument')
@@ -56,11 +62,6 @@ def release(version, dry_run, bump, pull_request):
                        'is not equal to current version {} != {}'.format(current_version, version))
             exit(1)
 
-    try:
-        git_releaser = next(filter(lambda releaser: isinstance(releaser, GitReleaser), releaser.releasers))
-    except StopIteration:
-        git_releaser = None
-
     if bump:
         ref = git_releaser.repo.refs.master
         if pull_request:
@@ -77,7 +78,7 @@ def release(version, dry_run, bump, pull_request):
                 git_releaser.repo.remotes.origin.push(ref)
 
             if pull_request:
-                invoke(['hub', 'pull-request', '-m', 'Release {}'.format(version)])
+                github_releaser.create_pull_request(version)
 
     if not dry_run and not pull_request:
         execute_hooks('publish', 'pre', config)

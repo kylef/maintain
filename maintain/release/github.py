@@ -44,6 +44,9 @@ class GitHubReleaser(Releaser):
 
         invoke(command)
 
+    def create_pull_request(self, version):
+        invoke(['hub', 'pull-request', '-m', 'Release {}'.format(version)])
+
 
 def cmd_exists(cmd):
     result = subprocess.call('type {}'.format(cmd), shell=True,
