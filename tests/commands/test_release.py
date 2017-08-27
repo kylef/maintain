@@ -22,7 +22,7 @@ class ReleaseCommandTestCase(unittest.TestCase):
         with self.runner.isolated_filesystem():
             result = self.runner.invoke(release, ['foo'])
 
-            self.assertTrue('Error: Invalid value: foo is not a semantic version' in result.output)
+            self.assertTrue('Error: Invalid value: foo is not a semantic version' in result.output, result.output)
             self.assertEqual(result.exit_code, 2)
 
     def test_git_release_without_remote(self):
