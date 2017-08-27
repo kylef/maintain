@@ -55,7 +55,7 @@ class Releaser(object):
         """
         pass
 
-    def release(self):
+    def release(self, new_version):
         """
         This method is called to perform actual release actions
         such as submission to a package manager.

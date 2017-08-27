@@ -1,5 +1,4 @@
 import os
-import subprocess
 
 import click
 from click.exceptions import MissingParameter
@@ -9,6 +8,7 @@ from semantic_version import Version
 from maintain.release.aggregate import AggregateReleaser
 from maintain.release.git_releaser import GitReleaser
 from maintain.release.github import GitHubReleaser
+from maintain.release.hooks import HookReleaser
 
 
 @click.command()
@@ -27,6 +27,8 @@ def release(version, dry_run, bump, pull_request):
 
     git_releasers = filter(lambda releaser: isinstance(releaser, GitReleaser), releaser.releasers)
     github_releasers = filter(lambda releaser: isinstance(releaser, GitHubReleaser), releaser.releasers)
+
+    releaser.releasers.append(HookReleaser.from_config(config))
 
     try:
         git_releaser = next(git_releasers)
@@ -82,9 +84,7 @@ def release(version, dry_run, bump, pull_request):
             ref = git_releaser.repo.create_head(branch, git_releaser.repo.head)
             git_releaser.repo.head.set_reference(ref)
 
-        execute_hooks('bump', 'pre', config)
         releaser.bump(version)
-        execute_hooks('bump', 'post', config)
 
         if not dry_run:
             if git_releaser.has_origin():
@@ -94,9 +94,7 @@ def release(version, dry_run, bump, pull_request):
                 github_releaser.create_pull_request(version)
 
     if not dry_run and not pull_request:
-        execute_hooks('publish', 'pre', config)
         releaser.release(version)
-        execute_hooks('publish', 'post', config)
 
 
 def bump_version(version, bump):
@@ -106,16 +104,3 @@ def bump_version(version, bump):
         exit(1)
 
     return getattr(version, 'next_{}'.format(bump))()
-
-
-def execute_hooks(phase, action, config):
-    release_config = config.get('release', {})
-    phase_config = release_config.get(phase, {})
-    hooks = phase_config.get(action, [])
-
-    if len(hooks) > 0:
-        click.echo('Running {} {} hooks'.format(phase, action))
-
-        for hook in hooks:
-            click.echo('- ' + hook)
-            subprocess.check_output(hook, shell=True)
