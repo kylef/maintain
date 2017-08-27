@@ -18,11 +18,6 @@ from maintain.release.github import GitHubReleaser
 @click.option('--bump/--no-bump', default=True)
 @click.option('--pull-request/--no-pull-request', default=False)
 def release(version, dry_run, bump, pull_request):
-    if pull_request and not cmd_exists('hub'):
-        click.echo('Missing dependency for hub: https://github.com/github/hub.' +
-                   ' Please install `hub` and try again.')
-        exit(1)
-
     if os.path.exists('.maintain.yml'):
         with open('.maintain.yml') as fp:
             config = yaml.load(fp.read())
@@ -31,8 +26,11 @@ def release(version, dry_run, bump, pull_request):
 
     releaser = AggregateReleaser()
 
-    if not GitHubReleaser.detect() and pull_request:
-        raise Exception('Used --pull-request and no GitHub remote')
+    if pull_request:
+        if not GitHubReleaser.detect():
+            raise Exception('Used --pull-request and no GitHub remote')
+
+        GitHubReleaser()
 
     if not version and bump:
         raise MissingParameter(param_hint='version', param_type='argument')
@@ -99,14 +97,6 @@ def bump_version(version, bump):
     return getattr(version, 'next_{}'.format(bump))()
 
 
-def github_create_pr(message):
-    invoke(['hub', 'pull-request', '-m', message])
-
-
-def cmd_exists(cmd):
-    result = subprocess.call('type {}'.format(cmd), shell=True,
-                             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    return result == 0
 
 
 def execute_hooks(phase, action, config):
