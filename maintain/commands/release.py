@@ -25,15 +25,28 @@ def release(version, dry_run, bump, pull_request):
 
     releaser = AggregateReleaser()
 
-    try:
-        git_releaser = next(filter(lambda releaser: isinstance(releaser, GitReleaser), releaser.releasers))
-    except StopIteration:
-        git_releaser = None
+    git_releasers = filter(lambda releaser: isinstance(releaser, GitReleaser), releaser.releasers)
+    github_releasers = filter(lambda releaser: isinstance(releaser, GitHubReleaser), releaser.releasers)
 
     try:
-        github_releaser = next(filter(lambda releaser: isinstance(releaser, GitHubReleaser), releaser.releasers))
+        git_releaser = next(git_releasers)
+    except StopIteration:
+        git_releaser = None
+    except TypeError:
+        if len(git_releasers) > 0:
+            git_releaser = git_releasers[0]
+        else:
+            git_releaser = None
+
+    try:
+        github_releaser = next(github_releasers)
     except StopIteration:
         github_releaser = None
+    except TypeError:
+        if len(github_releasers) > 0:
+            github_releaser = github_releasers[0]
+        else:
+            github_releaser = None
 
     if pull_request and not github_releaser:
         raise Exception('Used --pull-request and no GitHub remote')
