@@ -1,7 +1,6 @@
 import os
-import subprocess
 
-from semantic_version import Version
+from git import Repo
 
 from maintain.release.base import Releaser
 from maintain.process import invoke
@@ -15,54 +14,42 @@ class GitReleaser(Releaser):
         return os.path.exists('.git')
 
     def __init__(self):
-        git_check_branch()
+        self.repo = Repo()
 
-        if git_is_dirty():
+        if self.repo.head.ref != self.repo.heads.master:
+            # TODO: Support releasing from stable/hotfix branches
+            raise Exception('You need to be on the `master` branch in order to do a release.')
+
+        if self.repo.is_dirty():
             raise Exception('Git repository has unstaged changes.')
 
-        if git_has_origin_remote():
+        if self.has_origin():
+            self.repo.remotes.origin.fetch('master')
             git_update()
+
+    def has_origin(self):
+        try:
+            self.repo.remotes.origin
+        except AttributeError:
+            return False
+
+        return True
 
     def determine_current_version(self):
         return None
 
     def bump(self, new_version):
-        if git_is_dirty():
+        if self.repo.is_dirty():
             message = 'Release {}'.format(new_version)
-            invoke(['git', 'commit', '-a', '-m', message])
+            self.repo.index.add('*')
+            self.repo.index.commit(message)
 
     def release(self, version):
-        invoke(['git', 'tag', '-a', str(version), '-m', 'Release {}'.format(version)])
+        tag = self.repo.create_tag(str(version), message='Release {}'.format(version))
 
-        if git_has_origin_remote():
-            invoke(['git', 'push', 'origin', str(version)])
+        if self.has_origin():
+            self.repo.remotes.origin.push(tag)
 
 
 def git_update():
-    invoke(['git', 'pull', 'origin', 'master', '--no-rebase'])
-
-
-def git_check_branch():
-    branch = subprocess.check_output('git rev-parse --abbrev-ref HEAD', shell=True).decode('utf-8').strip()
-    if branch != 'master':
-        # TODO: Support releasing from stable/hotfix branches
-        raise Exception('You need to be on the `master` branch in order to do a release.')
-
-
-def git_is_dirty():
-    if subprocess.call(['git', 'diff', '--quiet']) != 0:
-        return True
-
-    if subprocess.call(['git', 'diff', '--cached', '--quiet']) != 0:
-        return True
-
-    return False
-
-
-def git_has_origin_remote():
-    try:
-        subprocess.check_output('git remote get-url origin', shell=True).strip().decode('utf-8')
-    except subprocess.CalledProcessError:
-        return False
-
-    return True
+    invoke(['git', 'pull', 'origin', 'master'])

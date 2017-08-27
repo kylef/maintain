@@ -1,10 +1,7 @@
-import os
-import subprocess
-
-from semantic_version import Version
+from git import Repo
+from git.exc import InvalidGitRepositoryError
 
 from maintain.release.base import Releaser
-from maintain.process import invoke
 
 
 class GitHubReleaser(Releaser):
@@ -12,7 +9,17 @@ class GitHubReleaser(Releaser):
 
     @classmethod
     def detect(cls):
-        return os.path.exists('.git') and is_github_remote()
+        try:
+            repo = Repo()
+        except InvalidGitRepositoryError:
+            return False
+
+        try:
+            url = repo.remotes.origin.url
+        except AttributeError:
+            return False
+
+        return url.startswith('https://github.com') or url.startswith('git@github.com')
 
     def determine_current_version(self):
         pass
@@ -22,12 +29,3 @@ class GitHubReleaser(Releaser):
 
     def release(self):
         pass
-
-
-def is_github_remote():
-    try:
-        remote = subprocess.check_output('git remote get-url origin', shell=True).strip().decode('utf-8')
-    except subprocess.CalledProcessError:
-        return None
-
-    return remote.startswith('https://github.com') or remote.startswith('git@github.com')

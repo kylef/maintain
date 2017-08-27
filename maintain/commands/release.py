@@ -1,22 +1,12 @@
 import os
 import subprocess
 
-try:
-    from io import StringIO
-except ImportError:
-    from StringIO import StringIO
-
-try:
-    from configparser import SafeConfigParser
-except ImportError:
-    from ConfigParser import SafeConfigParser
-
 import click
 from click.exceptions import MissingParameter
 import yaml
 from semantic_version import Version
 
-from maintain.process import invoke, temp_directory, chdir
+from maintain.process import invoke
 from maintain.release.aggregate import AggregateReleaser
 from maintain.release.git import GitReleaser
 from maintain.release.github import GitHubReleaser
@@ -71,10 +61,11 @@ def release(version, dry_run, bump, pull_request):
     git_releaser = GitReleaser()
 
     if bump:
-        branch = 'master'
+        ref = git_releaser.repo.refs.master
         if pull_request:
             branch = 'release-{}'.format(version)
-            invoke(['git', 'checkout', '-b', branch])
+            ref = git_releaser.repo.create_head(branch, git_releaser.repo.head)
+            git_releaser.repo.head.set_reference(ref)
 
         execute_hooks('bump', 'pre', config)
 
@@ -84,11 +75,11 @@ def release(version, dry_run, bump, pull_request):
         execute_hooks('bump', 'post', config)
 
         if not dry_run:
-            if git_has_origin_remote():
-                invoke(['git', 'push', 'origin', branch])
+            if git_releaser.has_origin():
+                git_releaser.repo.remotes.origin.push(ref)
 
             if pull_request:
-                invoke(['hub', 'pull-request', '-m', message])
+                invoke(['hub', 'pull-request', '-m', 'Release {}'.format(version)])
 
     if not dry_run and not pull_request:
         execute_hooks('publish', 'pre', config)
@@ -106,15 +97,6 @@ def bump_version(version, bump):
         exit(1)
 
     return getattr(version, 'next_{}'.format(bump))()
-
-
-def git_has_origin_remote():
-    try:
-        subprocess.check_output('git remote get-url origin', shell=True).strip().decode('utf-8')
-    except subprocess.CalledProcessError:
-        return False
-
-    return True
 
 
 def github_create_pr(message):
