@@ -16,7 +16,9 @@ class GitReleaser(Releaser):
 
     def __init__(self):
         git_check_branch()
-        git_check_dirty()
+
+        if git_is_dirty():
+            raise Exception('Git repository has unstaged changes.')
 
         if git_has_origin_remote():
             git_update()
@@ -37,21 +39,14 @@ class GitReleaser(Releaser):
 
 
 def git_update():
-    invoke(['git', 'pull', '--no-rebase'])
+    invoke(['git', 'pull', 'origin', 'master', '--no-rebase'])
 
 
 def git_check_branch():
     branch = subprocess.check_output('git rev-parse --abbrev-ref HEAD', shell=True).decode('utf-8').strip()
     if branch != 'master':
         # TODO: Support releasing from stable/hotfix branches
-        print('You need to be on the `master` branch in order to do a release.')
-        exit(1)
-
-
-def git_check_dirty():
-    error = 'You need to have a clean check out. You have un-committed local changes.'
-    invoke(['git', 'diff', '--quiet'], error)
-    invoke(['git', 'diff', '--cached', '--quiet'], error)
+        raise Exception('You need to be on the `master` branch in order to do a release.')
 
 
 def git_is_dirty():

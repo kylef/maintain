@@ -1,6 +1,7 @@
 import os
 import tempfile
 import shutil
+import subprocess
 
 
 class temp_directory(object):
@@ -22,3 +23,10 @@ def touch(filename, contents=''):
 
     with open(filename, 'w') as fp:
         fp.write(contents)
+
+
+class git_bare_repo(temp_directory):
+    def __enter__(self):
+        path = super(git_bare_repo, self).__enter__()
+        subprocess.check_output('git init --bare', shell=True)
+        return path

@@ -11,6 +11,51 @@ from ..utils import temp_directory, touch
 
 
 class GitReleaserTestCase(unittest.TestCase):
+    # Initialisation
+
+    def test_errors_when_non_master(self):
+        with temp_directory():
+            subprocess.check_output('git init', shell=True)
+
+            touch('README.md')
+            subprocess.check_output('git add README.md', shell=True)
+            subprocess.check_output('git commit -m initial', shell=True)
+
+            subprocess.check_output('git checkout -b kylef', shell=True)
+
+            with self.assertRaises(Exception):
+                GitReleaser()
+
+    def test_errors_when_unstaged_dirty(self):
+        with temp_directory():
+            subprocess.check_output('git init', shell=True)
+
+            touch('README.md')
+            subprocess.check_output('git add README.md', shell=True)
+            subprocess.check_output('git commit -m initial', shell=True)
+
+            with open('README.md', 'w') as fp:
+                fp.write('Hello')
+
+            with self.assertRaises(Exception):
+                GitReleaser()
+
+    def test_errors_when_staged_cache_dirty(self):
+        with temp_directory():
+            subprocess.check_output('git init', shell=True)
+
+            touch('README.md')
+            subprocess.check_output('git add README.md', shell=True)
+            subprocess.check_output('git commit -m initial', shell=True)
+
+            with open('README.md', 'w') as fp:
+                fp.write('Hello')
+
+            subprocess.check_output('git add README.md', shell=True)
+
+            with self.assertRaises(Exception):
+                GitReleaser()
+
     # Detection
 
     def test_detects_git_repo(self):
