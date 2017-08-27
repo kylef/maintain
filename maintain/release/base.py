@@ -28,6 +28,12 @@ class Releaser(object):
         """
         return None
 
+    def pre_bump(self, new_version):
+        """
+        Called before bumping the version.
+        """
+        pass
+
     def bump(self, new_version):
         """
         Called to bump the version number in the project.
@@ -37,6 +43,18 @@ class Releaser(object):
 
         raise NotImplemented
 
+    def post_bump(self, new_version):
+        """
+        Called after bumping the version.
+        """
+        pass
+
+    def pre_release(self, new_version):
+        """
+        Called before releasing the version.
+        """
+        pass
+
     def release(self):
         """
         This method is called to perform actual release actions
@@ -44,3 +62,9 @@ class Releaser(object):
         """
 
         raise NotImplemented
+
+    def post_release(self, new_version):
+        """
+        Called after releasing the version.
+        """
+        pass

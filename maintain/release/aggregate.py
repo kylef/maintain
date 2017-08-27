@@ -86,8 +86,20 @@ class AggregateReleaser(Releaser):
 
     def bump(self, new_version):
         for releaser in self.releasers:
+            releaser.pre_bump(new_version)
+
+        for releaser in self.releasers:
             releaser.bump(new_version)
+
+        for releaser in self.releasers:
+            releaser.post_bump(new_version)
 
     def release(self, new_version):
         for releaser in self.releasers:
+            releaser.pre_release(new_version)
+
+        for releaser in self.releasers:
             releaser.release(new_version)
+
+        for releaser in self.releasers:
+            releaser.post_release(new_version)
