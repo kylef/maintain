@@ -21,6 +21,17 @@ class PythonReleaserTestCase(unittest.TestCase):
             version = PythonReleaser().determine_current_version()
             self.assertEqual(version, Version('0.1.0'))
 
+    def test_detect_current_version_no_version(self):
+        fixture_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'fixtures')
+        package = os.path.join(fixture_path, 'setup-no-version.py')
+
+        with temp_directory():
+            shutil.copyfile(package, 'setup.py')
+            releaser = PythonReleaser()
+
+            with self.assertRaises(Exception):
+                releaser.determine_current_version()
+
     # Detection
 
     def test_detects_package_json(self):

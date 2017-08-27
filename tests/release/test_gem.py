@@ -9,7 +9,17 @@ from maintain.release.gem import GemReleaser
 from ..utils import temp_directory, touch
 
 
-class PythonReleaserTestCase(unittest.TestCase):
+class GemReleaserTestCase(unittest.TestCase):
+    # Initialisation
+
+    def test_errors_with_multiple_gemspecs(self):
+        with temp_directory():
+            touch('one.gemspec')
+            touch('two.gemspec')
+
+            with self.assertRaises(Exception):
+                GemReleaser()
+
     # Determine current version
 
     def test_detect_current_version(self):

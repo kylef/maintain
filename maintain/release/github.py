@@ -14,9 +14,6 @@ class GitHubReleaser(Releaser):
     def detect(cls):
         return os.path.exists('.git') and is_github_remote()
 
-    def __init__(self):
-        pass
-
     def determine_current_version(self):
         pass
 
