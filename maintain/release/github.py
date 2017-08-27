@@ -1,6 +1,9 @@
+import subprocess
+
 from git import Repo
 from git.exc import InvalidGitRepositoryError
 
+from maintain.process import invoke
 from maintain.release.base import Releaser
 
 
@@ -32,7 +35,14 @@ class GitHubReleaser(Releaser):
         pass
 
     def release(self, new_version):
-        pass
+        command = ['hub', 'release', 'create']
+
+        if new_version.prerelease:
+            command.append('-p')
+
+        command.append(str(new_version))
+
+        invoke(command)
 
 
 def cmd_exists(cmd):
