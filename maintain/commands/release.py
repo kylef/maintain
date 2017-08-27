@@ -19,6 +19,7 @@ from semantic_version import Version
 from maintain.process import invoke, temp_directory, chdir
 from maintain.release.aggregate import AggregateReleaser
 from maintain.release.git import GitReleaser
+from maintain.release.github import GitHubReleaser
 
 
 @click.command()
@@ -39,6 +40,9 @@ def release(version, dry_run, bump, pull_request):
         config = {}
 
     releaser = AggregateReleaser()
+
+    if not GitHubReleaser.detect() and pull_request:
+        raise Exception('Used --pull-request and no GitHub remote')
 
     if not version and bump:
         raise MissingParameter(param_hint='version', param_type='argument')
@@ -84,9 +88,6 @@ def release(version, dry_run, bump, pull_request):
                 invoke(['git', 'push', 'origin', branch])
 
             if pull_request:
-                if not git_has_origin_remote():
-                    raise Exception('Used --pull-request and no git remote')
-
                 invoke(['hub', 'pull-request', '-m', message])
 
     if not dry_run and not pull_request:
