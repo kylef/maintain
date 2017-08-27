@@ -31,7 +31,7 @@ class GitHubReleaser(Releaser):
     def bump(self, new_version):
         pass
 
-    def release(self):
+    def release(self, new_version):
         pass
 
 

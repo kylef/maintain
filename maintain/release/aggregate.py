@@ -84,6 +84,6 @@ class AggregateReleaser(Releaser):
         for releaser in self.releasers:
             releaser.bump(new_version)
 
-    def release(self):
+    def release(self, new_version):
         for releaser in self.releasers:
-            releaser.release()
+            releaser.release(new_version)

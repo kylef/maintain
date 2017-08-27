@@ -76,5 +76,5 @@ class CReleaser(Releaser):
         with open(self.header, 'w') as fp:
             fp.write(contents)
 
-    def release(self):
+    def release(self, new_version):
         pass

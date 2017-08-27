@@ -70,7 +70,7 @@ class ChangelogReleaser(Releaser):
         else:
             raise Exception('Changelog is missing a master release.')
 
-    def release(self):
+    def release(self, new_version):
         pass
 
 

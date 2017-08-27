@@ -83,7 +83,7 @@ def release(version, dry_run, bump, pull_request):
         execute_hooks('publish', 'pre', config)
 
         git_releaser.release(version)
-        releaser.release()
+        releaser.release(version)
 
         execute_hooks('publish', 'post', config)
 

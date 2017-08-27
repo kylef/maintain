@@ -27,5 +27,5 @@ class NPMReleaser(Releaser):
             json.dump(spec, fp, indent=2, separators=(',', ': '))
             fp.write('\n')
 
-    def release(self):
+    def release(self, new_version):
         invoke(['npm', 'publish'])

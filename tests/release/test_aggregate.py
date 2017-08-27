@@ -24,7 +24,7 @@ class TestReleaser(Releaser):
     def bump(self, new_version):
         self.current_version = Version(new_version)
 
-    def release(self):
+    def release(self, new_version):
         self.is_released = True
 
 
@@ -86,7 +86,7 @@ class AggregateReleaserTestCase(unittest.TestCase):
         ]
 
         releaser = AggregateReleaser(releasers=releasers)
-        releaser.release()
+        releaser.release(None)
 
         released = list(map(lambda r: r.is_released, releasers))
         self.assertEqual(released, [True, True])
