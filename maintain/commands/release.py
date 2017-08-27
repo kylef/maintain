@@ -95,8 +95,6 @@ def bump_version(version, bump):
     return getattr(version, 'next_{}'.format(bump))()
 
 
-
-
 def execute_hooks(phase, action, config):
     release_config = config.get('release', {})
     phase_config = release_config.get(phase, {})
