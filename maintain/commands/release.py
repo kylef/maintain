@@ -8,7 +8,7 @@ from semantic_version import Version
 
 from maintain.process import invoke
 from maintain.release.aggregate import AggregateReleaser
-from maintain.release.git import GitReleaser
+from maintain.release.git_releaser import GitReleaser
 from maintain.release.github import GitHubReleaser
 
 

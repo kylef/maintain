@@ -2,7 +2,7 @@ import unittest
 
 from semantic_version import Version
 
-from maintain.release.git import GitReleaser
+from maintain.release.git_releaser import GitReleaser
 from ..utils import git_repo, touch
 
 
