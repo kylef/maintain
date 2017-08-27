@@ -1,3 +1,5 @@
+-e .
+
 # Testing
 nose
 mock

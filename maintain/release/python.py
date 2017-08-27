@@ -35,7 +35,7 @@ class PythonReleaser(Releaser):
         with open('setup.py', 'w') as fp:
             fp.write(content)
 
-    def release(self):
+    def release(self, new_version):
         version = self.determine_current_version()
         invoke(['python', 'setup.py', 'sdist', 'bdist_wheel'])
         invoke(['twine', 'upload', 'dist/*{}*'.format(version)])

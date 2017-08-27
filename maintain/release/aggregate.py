@@ -5,6 +5,8 @@ from maintain.release.cocoapods import CocoaPodsReleaser
 from maintain.release.npm import NPMReleaser
 from maintain.release.c import CReleaser
 from maintain.release.changelog import ChangelogReleaser
+from maintain.release.git_releaser import GitReleaser
+from maintain.release.github import GitHubReleaser
 
 
 class AggregateReleaser(Releaser):
@@ -21,6 +23,8 @@ class AggregateReleaser(Releaser):
             NPMReleaser,
             CReleaser,
             ChangelogReleaser,
+            GitReleaser,
+            GitHubReleaser,
         ]
 
     @classmethod
@@ -84,6 +88,6 @@ class AggregateReleaser(Releaser):
         for releaser in self.releasers:
             releaser.bump(new_version)
 
-    def release(self):
+    def release(self, new_version):
         for releaser in self.releasers:
-            releaser.release()
+            releaser.release(new_version)

@@ -57,6 +57,8 @@ Maintain supports the following releasers:
 .. toctree::
    :maxdepth: 1
 
+   release/git
+   release/github
    release/version-file
    release/changelog
    release/python

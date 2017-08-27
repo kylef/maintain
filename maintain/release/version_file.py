@@ -18,5 +18,5 @@ class VersionFileReleaser(Releaser):
         with open('VERSION', 'w') as fp:
             fp.write(str(new_version) + '\n')
 
-    def release(self):
+    def release(self, new_version):
         pass

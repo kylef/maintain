@@ -1,10 +1,10 @@
-import os
 import subprocess
 
-from semantic_version import Version
+from git import Repo
+from git.exc import InvalidGitRepositoryError
 
-from maintain.release.base import Releaser
 from maintain.process import invoke
+from maintain.release.base import Releaser
 
 
 class GitHubReleaser(Releaser):
@@ -12,7 +12,21 @@ class GitHubReleaser(Releaser):
 
     @classmethod
     def detect(cls):
-        return os.path.exists('.git') and is_github_remote()
+        try:
+            repo = Repo()
+        except InvalidGitRepositoryError:
+            return False
+
+        try:
+            url = repo.remotes.origin.url
+        except AttributeError:
+            return False
+
+        return url.startswith('https://github.com') or url.startswith('git@github.com')
+
+    def __init__(self):
+        if not cmd_exists('hub'):
+            raise Exception('GitHub releases require hub. Missing dependency for hub: https://github.com/github/hub. Please install `hub` and try again.')
 
     def determine_current_version(self):
         pass
@@ -20,14 +34,21 @@ class GitHubReleaser(Releaser):
     def bump(self, new_version):
         pass
 
-    def release(self):
-        pass
+    def release(self, new_version):
+        command = ['hub', 'release', 'create']
+
+        if new_version.prerelease:
+            command.append('-p')
+
+        command.append(str(new_version))
+
+        invoke(command)
+
+    def create_pull_request(self, version):
+        invoke(['hub', 'pull-request', '-m', 'Release {}'.format(version)])
 
 
-def is_github_remote():
-    try:
-        remote = subprocess.check_output('git remote get-url origin', shell=True).strip().decode('utf-8')
-    except subprocess.CalledProcessError:
-        return None
-
-    return remote.startswith('https://github.com') or remote.startswith('git@github.com')
+def cmd_exists(cmd):
+    result = subprocess.call('type {}'.format(cmd), shell=True,
+                             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    return result == 0

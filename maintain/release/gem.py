@@ -48,7 +48,7 @@ class GemReleaser(Releaser):
         with open(self.gemspec, 'w') as fp:
             fp.write(content)
 
-    def release(self):
+    def release(self, new_version):
         gems = glob('*.gem')
         if len(gems) != 0:
             raise Exception('Cannot release, found multiple unexpected ' +

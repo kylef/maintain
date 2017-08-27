@@ -90,5 +90,5 @@ class CocoaPodsReleaser(Releaser):
         with open(self.podspec, 'w') as fp:
             fp.write(content)
 
-    def release(self):
+    def release(self, new_version):
         invoke(['pod', 'trunk', 'push', self.podspec])
