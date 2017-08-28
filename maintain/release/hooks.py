@@ -1,5 +1,7 @@
 import subprocess
 
+import click
+
 from maintain.release.base import Releaser
 
 
@@ -8,28 +10,17 @@ class HookReleaser(Releaser):
 
     @classmethod
     def detect(cls):
-        raise NotImplemented
+        return True
 
-    @classmethod
-    def from_config(cls, config):
-        releaser = cls()
-
-        if 'release' in config:
-            releaser.pre_bump_commands = config['release'].get('bump', {}).get('pre', [])
-            releaser.post_bump_commands = config['release'].get('bump', {}).get('post', [])
-            releaser.pre_release_commands = config['release'].get('publish', {}).get('pre', [])
-            releaser.post_release_commands = config['release'].get('publish', {}).get('post', [])
-
-        return releaser
-
-    def __init__(self):
-        self.pre_bump_commands = []
+    def __init__(self, config):
         self.bump_commands = []
-        self.post_bump_commands = []
-
-        self.pre_release_commands = []
         self.release_commands = []
-        self.post_release_commands = []
+
+        self.pre_bump_commands = config.get('bump', {}).get('pre', [])
+        self.post_bump_commands = config.get('bump', {}).get('post', [])
+
+        self.pre_release_commands = config.get('publish', {}).get('pre', [])
+        self.post_release_commands = config.get('publish', {}).get('post', [])
 
     def pre_bump(self, new_version):
         self.execute_hooks('pre bump', self.pre_bump_commands)

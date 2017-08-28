@@ -23,7 +23,7 @@ class Releaser(object):
         """
         Called to determine the current version number.
         """
-        raise NotImplemented
+        raise NotImplementedError()
 
     def determine_next_version(self):
         """
@@ -44,7 +44,7 @@ class Releaser(object):
         the new version.
         """
 
-        raise NotImplemented
+        raise NotImplementedError()
 
     def post_bump(self, new_version):
         """
@@ -64,7 +64,7 @@ class Releaser(object):
         such as submission to a package manager.
         """
 
-        raise NotImplemented
+        raise NotImplementedError()
 
     def post_release(self, new_version):
         """

@@ -1,4 +1,5 @@
 from maintain.release.base import Releaser
+from maintain.release.hooks import HookReleaser
 from maintain.release.version_file import VersionFileReleaser
 from maintain.release.python import PythonReleaser
 from maintain.release.cocoapods import CocoaPodsReleaser
@@ -17,6 +18,7 @@ class AggregateReleaser(Releaser):
         """
 
         return [
+            HookReleaser,
             VersionFileReleaser,
             PythonReleaser,
             CocoaPodsReleaser,
@@ -60,7 +62,10 @@ class AggregateReleaser(Releaser):
         releaser_name = None
 
         for releaser in self.releasers:
-            next_version = releaser.determine_current_version()
+            try:
+                next_version = releaser.determine_current_version()
+            except NotImplementedError:
+                continue
 
             if next_version and version and version != next_version:
                 raise Exception('Inconsistent versions, {} is at {} but {} is at {}.'.format(
@@ -70,7 +75,11 @@ class AggregateReleaser(Releaser):
             releaser_name = releaser.name
 
     def determine_current_version(self):
-        return self.releasers[0].determine_current_version()
+        for releaser in self.releasers:
+            try:
+                return releaser.determine_current_version()
+            except NotImplementedError:
+                continue
 
     def determine_next_version(self):
         version = None

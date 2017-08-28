@@ -28,8 +28,6 @@ def release(version, dry_run, bump, pull_request):
     git_releasers = filter(lambda releaser: isinstance(releaser, GitReleaser), releaser.releasers)
     github_releasers = filter(lambda releaser: isinstance(releaser, GitHubReleaser), releaser.releasers)
 
-    releaser.releasers.append(HookReleaser.from_config(config))
-
     try:
         git_releaser = next(git_releasers)
     except StopIteration:

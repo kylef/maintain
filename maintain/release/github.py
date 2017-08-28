@@ -24,7 +24,7 @@ class GitHubReleaser(Releaser):
 
         return url.startswith('https://github.com') or url.startswith('git@github.com')
 
-    def __init__(self):
+    def __init__(self, config):
         if not cmd_exists('hub'):
             raise Exception('GitHub releases require hub. Missing dependency for hub: https://github.com/github/hub. Please install `hub` and try again.')
 
