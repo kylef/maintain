@@ -8,6 +8,7 @@
   repositories.
 - Release now offers a `--verbose` flag to log what is happening during
   release.
+- GitHub releaser now allows you to upload artefacts to the GitHub release.
 
 
 ## 0.2.0 (2016-05-10)
