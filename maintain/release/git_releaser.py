@@ -30,6 +30,9 @@ class GitReleaser(Releaser):
         if self.repo.is_dirty():
             raise Exception('Git repository has unstaged changes.')
 
+        if len(self.repo.untracked_files) > 0:
+            raise Exception('Git repository has untracked files.')
+
         if self.has_origin():
             self.repo.remotes.origin.fetch()
 

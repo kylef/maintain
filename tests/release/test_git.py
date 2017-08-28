@@ -47,6 +47,16 @@ class GitReleaserTestCase(unittest.TestCase):
             with self.assertRaises(Exception):
                 GitReleaser()
 
+    def test_errors_when_untracked_files(self):
+        with git_repo() as repo:
+            touch('README.md')
+            repo.index.add(['README.md'])
+            repo.index.commit('Initial commit')
+            touch('HELLO')
+
+            with self.assertRaises(Exception):
+                GitReleaser()
+
     def test_errors_when_remote_has_changes(self):
         with git_bare_repo() as bare_repo:
             with git_repo() as repo:
