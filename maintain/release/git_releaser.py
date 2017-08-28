@@ -1,9 +1,13 @@
 import os
+import logging
 
 from git import Repo
 
 from maintain.release.base import Releaser
 from maintain.process import invoke
+
+
+logger = logging.getLogger(__name__)
 
 
 class GitReleaser(Releaser):
@@ -45,14 +49,21 @@ class GitReleaser(Releaser):
 
     def bump(self, new_version):
         if self.repo.is_dirty():
+            message = self.commit_format.format(version=new_version)
+
             self.repo.index.add('*')
-            self.repo.index.commit(self.commit_format.format(version=new_version))
+            self.repo.index.commit(message)
+
+            logger.info('Created Commit: {}'.format(message))
 
     def release(self, version):
         tag_name = self.tag_format.format(version=version)
         tag = self.repo.create_tag(tag_name, message='Release {}'.format(version))
 
+        logger.info('Created Tag: {}'.format(tag_name))
+
         if self.has_origin():
+            logger.info('Pushing Tag to Remote')
             self.repo.remotes.origin.push(tag)
 
 

@@ -1,8 +1,10 @@
 import subprocess
-
-import click
+import logging
 
 from maintain.release.base import Releaser
+
+
+logger = logging.getLogger(__name__)
 
 
 class HookReleaser(Releaser):
@@ -42,8 +44,8 @@ class HookReleaser(Releaser):
 
     def execute_hooks(self, phase, commands):
         if len(commands) > 0:
-            click.echo('Running {} hooks'.format(phase))
+            logger.info('Running {} hooks'.format(phase))
 
             for hook in commands:
-                click.echo('- ' + hook)
+                logger.info('$ {}'.format(hook))
                 subprocess.check_output(hook, shell=True)

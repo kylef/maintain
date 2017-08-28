@@ -2,11 +2,14 @@ import json
 import re
 import collections
 from glob import glob
+import logging
 
 from semantic_version import Version
 
 from maintain.release.base import Releaser
 from maintain.process import invoke
+
+logger = logging.getLogger(__name__)
 
 
 class CocoaPodsReleaser(Releaser):
@@ -79,6 +82,8 @@ class CocoaPodsReleaser(Releaser):
             json.dump(spec, fp, indent=2, separators=(',', ': '))
             fp.write('\n')
 
+        logger.info('Updated version and source tag in {}'.format(self.podspec))
+
     def bump_ruby_podspec(self, new_version):
         with open(self.podspec, 'r') as fp:
             def replace(matcher):
@@ -89,6 +94,8 @@ class CocoaPodsReleaser(Releaser):
 
         with open(self.podspec, 'w') as fp:
             fp.write(content)
+
+        logger.info('Updated version in {}'.format(self.podspec))
 
     def release(self, new_version):
         invoke(['pod', 'trunk', 'push', self.podspec])

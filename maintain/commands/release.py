@@ -1,4 +1,6 @@
 import os
+import sys
+import logging
 
 import click
 from click.exceptions import MissingParameter
@@ -10,12 +12,24 @@ from maintain.release.git_releaser import GitReleaser
 from maintain.release.github import GitHubReleaser
 
 
+logger = logging.getLogger('maintain.release')
+
+
 @click.command()
 @click.argument('version', required=False)
 @click.option('--dry-run/--no-dry-run', default=False)
 @click.option('--bump/--no-bump', default=True)
 @click.option('--pull-request/--no-pull-request', default=False)
-def release(version, dry_run, bump, pull_request):
+@click.option('--verbose/--no-verbose', default=False)
+def release(version, dry_run, bump, pull_request, verbose):
+    formatter = logging.Formatter('[%(levelname)s] %(message)s')
+    handler = logging.StreamHandler(stream=sys.stdout)
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+
+    if verbose:
+        logger.setLevel(logging.DEBUG)
+
     if os.path.exists('.maintain.yml'):
         with open('.maintain.yml') as fp:
             config = yaml.load(fp.read())

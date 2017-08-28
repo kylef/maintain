@@ -1,3 +1,5 @@
+import logging
+
 from maintain.release.base import Releaser
 from maintain.release.hooks import HookReleaser
 from maintain.release.version_file import VersionFileReleaser
@@ -8,6 +10,9 @@ from maintain.release.c import CReleaser
 from maintain.release.changelog import ChangelogReleaser
 from maintain.release.git_releaser import GitReleaser
 from maintain.release.github import GitHubReleaser
+
+
+logger = logging.getLogger(__name__)
 
 
 class AggregateReleaser(Releaser):
@@ -50,6 +55,7 @@ class AggregateReleaser(Releaser):
                 continue
 
             if releaser_cls.detect():
+                logger.info('Enabled Releaser: {}'.format(releaser_cls.name))
                 releasers.append(releaser_cls(releaser_config))
 
         return releasers
