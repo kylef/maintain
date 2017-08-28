@@ -4,6 +4,8 @@ from semantic_version import Version
 
 from maintain.release.base import Releaser
 from maintain.release.aggregate import AggregateReleaser
+from maintain.release.version_file import VersionFileReleaser
+from ..utils import temp_directory, touch
 
 
 class TestReleaser(Releaser):
@@ -90,3 +92,23 @@ class AggregateReleaserTestCase(unittest.TestCase):
 
         released = list(map(lambda r: r.is_released, releasers))
         self.assertEqual(released, [True, True])
+
+    def test_detecting_releasers(self):
+        with temp_directory():
+            touch('VERSION', '1.0.0\n')
+
+            releaser = AggregateReleaser()
+            releasers = list(filter(lambda r: isinstance(r, VersionFileReleaser), releaser.releasers))
+            self.assertEqual(len(releasers), 1)
+
+    def test_detecting_disabled_releasers(self):
+        with temp_directory():
+            touch('VERSION', '1.0.0\n')
+
+            releaser = AggregateReleaser(config={
+                'version_file': {
+                    'disabled': True
+                }
+            })
+            releasers = list(filter(lambda r: isinstance(r, VersionFileReleaser), releaser.releasers))
+            self.assertEqual(len(releasers), 0)

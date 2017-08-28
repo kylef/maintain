@@ -6,6 +6,8 @@ from maintain.release.base import Releaser
 
 
 class VersionFileReleaser(Releaser):
+    name = 'Version File'
+
     @classmethod
     def detect(cls):
         return os.path.exists('VERSION')

@@ -37,13 +37,22 @@ class AggregateReleaser(Releaser):
 
         def get_config(releaser):
             if config:
-                return config.get(releaser.name.lower(), {})
+                return config.get(releaser.name.lower().replace(' ', '_'), {})
 
             return {}
 
-        releasers_cls = filter(lambda r: r.detect(), cls.releasers())
-        releasers = map(lambda r: r(get_config(r)), releasers_cls)
-        return list(releasers)
+        releasers = []
+
+        for releaser_cls in cls.releasers():
+            releaser_config = get_config(releaser_cls)
+
+            if releaser_config.get('disabled', False):
+                continue
+
+            if releaser_cls.detect():
+                releasers.append(releaser_cls(releaser_config))
+
+        return releasers
 
     @classmethod
     def detect(cls):
