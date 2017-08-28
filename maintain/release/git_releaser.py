@@ -13,8 +13,11 @@ class GitReleaser(Releaser):
     def detect(cls):
         return os.path.exists('.git')
 
-    def __init__(self):
+    def __init__(self, config=None):
         self.repo = Repo()
+
+        self.commit_format = (config or {}).get('commit_format', 'Release {version}')
+        self.tag_format = (config or {}).get('tag_format', '{version}')
 
         if self.repo.head.ref != self.repo.heads.master:
             # TODO: Support releasing from stable/hotfix branches
@@ -42,12 +45,12 @@ class GitReleaser(Releaser):
 
     def bump(self, new_version):
         if self.repo.is_dirty():
-            message = 'Release {}'.format(new_version)
             self.repo.index.add('*')
-            self.repo.index.commit(message)
+            self.repo.index.commit(self.commit_format.format(version=new_version))
 
     def release(self, version):
-        tag = self.repo.create_tag(str(version), message='Release {}'.format(version))
+        tag_name = self.tag_format.format(version=version)
+        tag = self.repo.create_tag(tag_name, message='Release {}'.format(version))
 
         if self.has_origin():
             self.repo.remotes.origin.push(tag)

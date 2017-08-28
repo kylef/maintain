@@ -1,5 +1,14 @@
 # git Releaser
 
+## Configuration
+
+```yaml
+release:
+  git:
+    commit_format: Release {version}
+    tag_format: {version}
+```
+
 ## Detect
 
 Detects Git repositories.

@@ -16,17 +16,26 @@ class Releaser(object):
 
         return False
 
+    def __init__(self, config=None):
+        pass
+
     def determine_current_version(self):
         """
         Called to determine the current version number.
         """
-        raise NotImplemented
+        raise NotImplementedError()
 
     def determine_next_version(self):
         """
         Called to determine the next version number.
         """
         return None
+
+    def pre_bump(self, new_version):
+        """
+        Called before bumping the version.
+        """
+        pass
 
     def bump(self, new_version):
         """
@@ -35,12 +44,30 @@ class Releaser(object):
         the new version.
         """
 
-        raise NotImplemented
+        raise NotImplementedError()
 
-    def release(self):
+    def post_bump(self, new_version):
+        """
+        Called after bumping the version.
+        """
+        pass
+
+    def pre_release(self, new_version):
+        """
+        Called before releasing the version.
+        """
+        pass
+
+    def release(self, new_version):
         """
         This method is called to perform actual release actions
         such as submission to a package manager.
         """
 
-        raise NotImplemented
+        raise NotImplementedError()
+
+    def post_release(self, new_version):
+        """
+        Called after releasing the version.
+        """
+        pass
