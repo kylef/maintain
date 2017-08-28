@@ -8,7 +8,6 @@ from semantic_version import Version
 from maintain.release.aggregate import AggregateReleaser
 from maintain.release.git_releaser import GitReleaser
 from maintain.release.github import GitHubReleaser
-from maintain.release.hooks import HookReleaser
 
 
 @click.command()
