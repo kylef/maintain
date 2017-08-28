@@ -28,21 +28,27 @@ class AggregateReleaser(Releaser):
         ]
 
     @classmethod
-    def detected_releasers(cls):
+    def detected_releasers(cls, config):
         """
         Returns all of the releasers that are compatible with the project.
         """
 
+        def get_config(releaser):
+            if config:
+                return config.get(releaser.name.lower(), {})
+
+            return {}
+
         releasers_cls = filter(lambda r: r.detect(), cls.releasers())
-        releasers = map(lambda r: r(), releasers_cls)
+        releasers = map(lambda r: r(get_config(r)), releasers_cls)
         return list(releasers)
 
     @classmethod
     def detect(cls):
         return len(cls.detected_releasers()) > 0
 
-    def __init__(self, releasers=None):
-        self.releasers = releasers or self.detected_releasers()
+    def __init__(self, config=None, releasers=None):
+        self.releasers = releasers or self.detected_releasers(config)
         self.check_version_consistency()
 
     def check_version_consistency(self):

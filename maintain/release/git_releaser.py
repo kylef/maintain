@@ -13,7 +13,7 @@ class GitReleaser(Releaser):
     def detect(cls):
         return os.path.exists('.git')
 
-    def __init__(self):
+    def __init__(self, config=None):
         self.repo = Repo()
 
         if self.repo.head.ref != self.repo.heads.master:

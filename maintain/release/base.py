@@ -16,6 +16,9 @@ class Releaser(object):
 
         return False
 
+    def __init__(self, config=None):
+        pass
+
     def determine_current_version(self):
         """
         Called to determine the current version number.

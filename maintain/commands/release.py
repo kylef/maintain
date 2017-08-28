@@ -23,7 +23,7 @@ def release(version, dry_run, bump, pull_request):
     else:
         config = {}
 
-    releaser = AggregateReleaser()
+    releaser = AggregateReleaser(config.get('release', {}))
 
     git_releasers = filter(lambda releaser: isinstance(releaser, GitReleaser), releaser.releasers)
     github_releasers = filter(lambda releaser: isinstance(releaser, GitHubReleaser), releaser.releasers)
