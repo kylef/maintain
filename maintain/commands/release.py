@@ -89,6 +89,8 @@ def release(version, dry_run, bump, pull_request, verbose):
             exit(1)
 
     if bump:
+        logger.info('Bumping {}'.format(version))
+
         ref = git_releaser.repo.refs.master
         if pull_request:
             branch = 'release-{}'.format(version)
@@ -105,6 +107,7 @@ def release(version, dry_run, bump, pull_request, verbose):
                 github_releaser.create_pull_request(version)
 
     if not dry_run and not pull_request:
+        logger.info('Releasing {}'.format(version))
         releaser.release(version)
 
 
