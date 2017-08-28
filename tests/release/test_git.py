@@ -109,3 +109,20 @@ class GitReleaserTestCase(unittest.TestCase):
             GitReleaser().bump(Version('1.0.0'))
 
             self.assertEqual(repo.refs.master.commit.message, 'Initial commit')
+
+    def test_bump_custom_commit_format(self):
+        with git_repo() as repo:
+            touch('README.md')
+            repo.index.add(['README.md'])
+            repo.index.commit('Initial commit')
+
+            releaser = GitReleaser(config={
+                'commit_format': 'chore: Release {version}'
+            })
+
+            touch('CHANGELOG.md')
+            repo.index.add(['CHANGELOG.md'])
+
+            releaser.bump(Version('1.0.0'))
+
+            self.assertEqual(repo.refs.master.commit.message, 'chore: Release 1.0.0')

@@ -16,6 +16,8 @@ class GitReleaser(Releaser):
     def __init__(self, config=None):
         self.repo = Repo()
 
+        self.commit_format = (config or {}).get('commit_format', 'Release {version}')
+
         if self.repo.head.ref != self.repo.heads.master:
             # TODO: Support releasing from stable/hotfix branches
             raise Exception('You need to be on the `master` branch in order to do a release.')
@@ -42,9 +44,8 @@ class GitReleaser(Releaser):
 
     def bump(self, new_version):
         if self.repo.is_dirty():
-            message = 'Release {}'.format(new_version)
             self.repo.index.add('*')
-            self.repo.index.commit(message)
+            self.repo.index.commit(self.commit_format.format(version=new_version))
 
     def release(self, version):
         tag = self.repo.create_tag(str(version), message='Release {}'.format(version))
