@@ -28,6 +28,8 @@ class GitHubReleaser(Releaser):
         if not cmd_exists('hub'):
             raise Exception('GitHub releases require hub. Missing dependency for hub: https://github.com/github/hub. Please install `hub` and try again.')
 
+        self.artefacts = config.get('artefacts', [])
+
     def determine_current_version(self):
         pass
 
@@ -39,6 +41,10 @@ class GitHubReleaser(Releaser):
 
         if new_version.prerelease:
             command.append('-p')
+
+        for artefact in self.artefacts:
+            command.append('-a')
+            command.append(artefact)
 
         command.append(str(new_version))
 
