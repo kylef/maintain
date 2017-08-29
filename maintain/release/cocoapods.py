@@ -28,7 +28,7 @@ class CocoaPodsReleaser(Releaser):
     def detect(cls):
         return len(cls.podspecs()) > 0
 
-    def __init__(self):
+    def __init__(self, config=None):
         self.verify()
 
     def verify(self):
