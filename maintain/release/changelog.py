@@ -88,7 +88,7 @@ class Release(object):
 
     def find_section(self, name):
         for section in self.sections:
-            if section.name == name:
+            if section.name.lower() == name.lower():
                 return section
 
 
@@ -158,7 +158,7 @@ def ast_to_changelog(node):
             if not release:
                 raise Exception('Level 3 heading was not found within a release (level 2 heading).')
 
-            if heading.title not in ('Enhancements', 'Breaking', 'Bug Fixes'):
+            if heading.title.lower() not in ('enhancements', 'breaking', 'bug fixes'):
                 raise Exception('Changelog section {} is not supported.'.format(heading.title))
 
             release.sections.append(Section(heading.title))
