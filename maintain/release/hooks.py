@@ -25,27 +25,27 @@ class HookReleaser(Releaser):
         self.post_release_commands = config.get('publish', {}).get('post', [])
 
     def pre_bump(self, new_version):
-        self.execute_hooks('pre bump', self.pre_bump_commands)
+        self.execute_hooks('pre bump', self.pre_bump_commands, new_version)
 
     def bump(self, new_version):
-        self.execute_hooks('bump', self.bump_commands)
+        self.execute_hooks('bump', self.bump_commands, new_version)
 
     def post_bump(self, new_version):
-        self.execute_hooks('post bump', self.post_bump_commands)
+        self.execute_hooks('post bump', self.post_bump_commands, new_version)
 
     def pre_release(self, new_version):
-        self.execute_hooks('pre release', self.pre_release_commands)
+        self.execute_hooks('pre release', self.pre_release_commands, new_version)
 
     def release(self, new_version):
-        self.execute_hooks('release', self.release_commands)
+        self.execute_hooks('release', self.release_commands, new_version)
 
     def post_release(self, new_version):
-        self.execute_hooks('post release', self.post_release_commands)
+        self.execute_hooks('post release', self.post_release_commands, new_version)
 
-    def execute_hooks(self, phase, commands):
+    def execute_hooks(self, phase, commands, version):
         if len(commands) > 0:
             logger.info('Running {} hooks'.format(phase))
 
             for hook in commands:
                 logger.info('$ {}'.format(hook))
-                subprocess.check_output(hook, shell=True)
+                subprocess.check_output(hook, shell=True, env={'VERSION': version})

@@ -8,12 +8,18 @@ release:
   hooks:
     bump:
       pre:
-        - echo 'version will be bumped'
+        - echo '$VERSION will be bumped'
       post:
-        - echo 'version was bumped'
+        - echo '$VERSION was bumped'
     release:
       pre:
-        - echo 'version will be released'
+        - echo '$VERSION will be released'
       post:
-        - echo 'version was released'
+        - echo '$VERSION was released'
 ```
+
+## Environment Variables
+
+### `VERSION`
+
+VERSION environment variable includes the new version.
