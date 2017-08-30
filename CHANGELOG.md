@@ -10,6 +10,8 @@
   release.
 - GitHub releaser now allows you to upload artefacts to the GitHub release.
 - Hooks are now passed the VERSION as an environment variable.
+- Hooks can now be placed in files inside `.maintain/hooks` such as
+  `.maintain/hooks/pre_release`.
 
 
 ## 0.2.0 (2016-05-10)

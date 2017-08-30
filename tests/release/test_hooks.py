@@ -1,8 +1,10 @@
+import os
+import stat
 import unittest
 import subprocess
 
 from maintain.release.hooks import HookReleaser
-from ..utils import temp_directory
+from ..utils import temp_directory, touch
 
 
 class HookReleaseTests(unittest.TestCase):
@@ -55,6 +57,19 @@ class HookReleaseTests(unittest.TestCase):
 
         with temp_directory():
             releaser.pre_bump('1.0.0')
+
+            with open('output') as fp:
+                self.assertEqual(fp.read(), '1.0.0\n')
+
+    def test_calls_bump_file_hook(self):
+        releaser = HookReleaser({})
+
+        with temp_directory():
+            touch('.maintain/hooks/bump', '#!/usr/bin/env bash\necho $VERSION > output')
+            st = os.stat('.maintain/hooks/bump')
+            os.chmod('.maintain/hooks/bump', st.st_mode | stat.S_IEXEC)
+
+            releaser.bump('1.0.0')
 
             with open('output') as fp:
                 self.assertEqual(fp.read(), '1.0.0\n')
