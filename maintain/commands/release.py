@@ -3,7 +3,7 @@ import sys
 import logging
 
 import click
-from click.exceptions import MissingParameter
+from click.exceptions import MissingParameter, ClickException
 import yaml
 from semantic_version import Version
 
@@ -113,8 +113,6 @@ def release(version, dry_run, bump, pull_request, verbose):
 
 def bump_version(version, bump):
     if version.prerelease or version.build:
-        print('Current version {} contains prerelease or build. ' +
-              'Bumping is not supported.'.format(version))
-        exit(1)
+        raise ClickException('Current version {} contains prerelease or build. Bumping is not supported.'.format(version))
 
     return getattr(version, 'next_{}'.format(bump))()

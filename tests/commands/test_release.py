@@ -4,7 +4,7 @@ from click.testing import CliRunner
 from git import Repo
 
 from maintain.commands.release import release
-from ..utils import temp_directory, git_bare_repo
+from ..utils import temp_directory, git_bare_repo, touch
 
 
 class ReleaseCommandTestCase(unittest.TestCase):
@@ -24,6 +24,14 @@ class ReleaseCommandTestCase(unittest.TestCase):
 
             self.assertTrue('Error: Invalid value: foo is not a semantic version' in result.output, result.output)
             self.assertEqual(result.exit_code, 2)
+
+    def test_bump_version_from_prerelease(self):
+        with self.runner.isolated_filesystem():
+            touch('VERSION', '1.0.0-beta.1\n')
+            result = self.runner.invoke(release, ['patch'])
+
+            self.assertTrue('Error: Current version 1.0.0-beta.1 contains prerelease or build' in result.output, result.output)
+            self.assertEqual(result.exit_code, 1)
 
     def test_git_release_without_remote(self):
         with self.runner.isolated_filesystem():
