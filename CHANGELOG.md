@@ -9,6 +9,7 @@
 - Release now offers a `--verbose` flag to log what is happening during
   release.
 - GitHub releaser now allows you to upload artefacts to the GitHub release.
+- GitHub releaser will now upload changelog release from `CHANGELOG.md` files.
 - Hooks are now passed the VERSION as an environment variable.
 - Hooks can now be placed in files inside `.maintain/hooks` such as
   `.maintain/hooks/pre_release`.
