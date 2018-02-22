@@ -20,4 +20,8 @@ There is no bump steps for the GitHub releaser.
 
 ## Release
 
-Creates a GitHub release.
+Creates a GitHub release. You can provide artefacts to be uploaded to the
+release in the configuration.
+
+GitHub Releaser will detect `CHANGELOG.md` files and pull out the changelog for
+the current release to be uploaded to the release.
