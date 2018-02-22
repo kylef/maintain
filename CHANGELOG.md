@@ -12,6 +12,7 @@
 - Hooks are now passed the VERSION as an environment variable.
 - Hooks can now be placed in files inside `.maintain/hooks` such as
   `.maintain/hooks/pre_release`.
+- Added a Conventional Commits releaser.
 
 
 ## 0.2.0 (2016-05-10)

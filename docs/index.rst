@@ -67,6 +67,7 @@ Maintain supports the following releasers:
    release/npm
    release/cocoapods
    release/c
+   release/conventional-commits
 
 Custom Hooks
 ~~~~~~~~~~~~
