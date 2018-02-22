@@ -104,3 +104,34 @@ def parse_changelog(path):
         parser = CommonMark.Parser()
         ast = parser.parse(fp.read())
         return ast_to_changelog(ast)
+
+
+def extract_last_changelog(path):
+    with open(path, 'r') as fp:
+        parser = CommonMark.Parser()
+        content = fp.read()
+
+    changelog = ast_to_changelog(parser.parse(content))
+
+    if len(changelog.releases) == 0:
+        raise Exception('No changelog releases')
+
+    if len(changelog.releases) > 1:
+        current = changelog.releases[0]
+        previous = changelog.releases[1]
+
+        with open(path, 'r') as fp:
+            content = fp.read()
+
+        pattern = r'\#\# {}(.*\n)([\n\S\s]*)\#\# {}'.format(re.escape(current.name), re.escape(previous.name))
+        result = re.search(pattern, content, re.MULTILINE)
+        return result.group(2).strip()
+    elif len(changelog.releases) == 1:
+        current = changelog.releases[0]
+
+        with open(path, 'r') as fp:
+            content = fp.read()
+
+        pattern = r'\#\# {}(.*\n)([\n\S\s]*)'.format(re.escape(current.name))
+        result = re.search(pattern, content, re.MULTILINE)
+        return result.group(2).strip()
