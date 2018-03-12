@@ -4,9 +4,9 @@ import logging
 
 import click
 from click.exceptions import MissingParameter, ClickException
-import yaml
 from semantic_version import Version
 
+from maintain.config import Configuration
 from maintain.release.aggregate import AggregateReleaser
 from maintain.release.git_releaser import GitReleaser
 from maintain.release.github import GitHubReleaser
@@ -30,13 +30,9 @@ def release(version, dry_run, bump, pull_request, verbose):
     if verbose:
         logger.setLevel(logging.DEBUG)
 
-    if os.path.exists('.maintain.yml'):
-        with open('.maintain.yml') as fp:
-            config = yaml.load(fp.read())
-    else:
-        config = {}
+    config = Configuration.load()
 
-    releaser = AggregateReleaser(config.get('release', {}))
+    releaser = AggregateReleaser(config.release)
 
     git_releasers = filter(lambda releaser: isinstance(releaser, GitReleaser), releaser.releasers)
     github_releasers = filter(lambda releaser: isinstance(releaser, GitHubReleaser), releaser.releasers)
