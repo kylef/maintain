@@ -8,7 +8,7 @@ from maintain.release.version_file import VersionFileReleaser
 from ..utils import temp_directory, touch
 
 
-class TestReleaser(Releaser):
+class MockReleaser(Releaser):
     def __init__(self, current_version, next_version=None):
         self.current_version = Version(current_version)
         if next_version:
@@ -33,46 +33,46 @@ class TestReleaser(Releaser):
 class AggregateReleaserTestCase(unittest.TestCase):
     def test_errors_when_inconsistent_releaser_versions(self):
         releasers = [
-            TestReleaser('1.2.3'),
-            TestReleaser('1.2.4'),
+            MockReleaser('1.2.3'),
+            MockReleaser('1.2.4'),
         ]
 
         with self.assertRaises(Exception):
             AggregateReleaser(releasers=releasers)
 
     def test_detect_current_version(self):
-        releaser = AggregateReleaser(releasers=[TestReleaser('1.2.3')])
+        releaser = AggregateReleaser(releasers=[MockReleaser('1.2.3')])
         version = releaser.determine_current_version()
         self.assertEqual(version, Version('1.2.3'))
 
     def test_determine_next_version_unknown(self):
         releaser = AggregateReleaser(releasers=[
-            TestReleaser('1.2.3'),
-            TestReleaser('1.2.3'),
+            MockReleaser('1.2.3'),
+            MockReleaser('1.2.3'),
         ])
         version = releaser.determine_next_version()
         self.assertEqual(version, None)
 
     def test_determine_next_version(self):
         releaser = AggregateReleaser(releasers=[
-            TestReleaser('1.2.3'),
-            TestReleaser('1.2.3', '1.3.0'),
+            MockReleaser('1.2.3'),
+            MockReleaser('1.2.3', '1.3.0'),
         ])
         version = releaser.determine_next_version()
         self.assertEqual(version, Version('1.3.0'))
 
     def test_determine_inconsistent_next_version(self):
         releaser = AggregateReleaser(releasers=[
-            TestReleaser('1.2.3', '2.0.0'),
-            TestReleaser('1.2.3', '1.3.0'),
+            MockReleaser('1.2.3', '2.0.0'),
+            MockReleaser('1.2.3', '1.3.0'),
         ])
         with self.assertRaises(Exception):
             releaser.determine_next_version()
 
     def test_bumping(self):
         releasers = [
-            TestReleaser('1.2.3'),
-            TestReleaser('1.2.3'),
+            MockReleaser('1.2.3'),
+            MockReleaser('1.2.3'),
         ]
 
         releaser = AggregateReleaser(releasers=releasers)
@@ -83,8 +83,8 @@ class AggregateReleaserTestCase(unittest.TestCase):
 
     def test_releasing(self):
         releasers = [
-            TestReleaser('1.2.3'),
-            TestReleaser('1.2.3'),
+            MockReleaser('1.2.3'),
+            MockReleaser('1.2.3'),
         ]
 
         releaser = AggregateReleaser(releasers=releasers)
