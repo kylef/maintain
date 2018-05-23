@@ -1,6 +1,18 @@
 import os
 
 import yaml
+import jsonschema
+
+
+SCHEMA = {
+    'type': 'object',
+    'properties': {
+        'release': {
+            'type': 'object'
+            # TODO variable properties to object
+        }
+    }
+}
 
 
 class Configuration(object):
@@ -27,9 +39,16 @@ class Configuration(object):
     @classmethod
     def fromfile(cls, path):
         with open(path) as fp:
-            content = yaml.load(fp.read())
+            content = fp.read()
+            content = yaml.load(content)
+            cls.validate(content)
 
         return cls(**content)
+
+    @classmethod
+    def validate(cls, config):
+        jsonschema.validate(config, SCHEMA)
+        return True
 
     def __init__(self, release=None):
         self.release = release or {}

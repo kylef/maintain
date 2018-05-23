@@ -46,3 +46,10 @@ class ConfigurationTests(unittest.TestCase):
 
             with self.assertRaises(Exception):
                 Configuration.load()
+
+    def test_loading_file_validation(self):
+        with temp_directory():
+            touch('.maintain.yml', 'release: []')
+
+            with self.assertRaises(Exception):
+                Configuration.load()
