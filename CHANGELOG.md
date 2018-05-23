@@ -2,6 +2,10 @@
 
 ## Master
 
+### Breaking
+
+- Drop support for Python 3.3.
+
 ### Enhancements
 
 - Releasing no longer requires a git remote. Release can be used for local
