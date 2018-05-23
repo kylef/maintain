@@ -13,31 +13,31 @@ class ConfigurationTests(unittest.TestCase):
 
     def test_loading_file_maintain_yml(self):
         with temp_directory():
-            touch('.maintain.yml', 'release:\n  test: value')
+            touch('.maintain.yml', 'release:\n  test: {}')
 
             configuration = Configuration.load()
-            self.assertEqual(configuration.release.get('test'), 'value')
+            self.assertEqual(configuration.release.get('test'), {})
 
     def test_loading_file_maintain_yaml(self):
         with temp_directory():
-            touch('.maintain.yaml', 'release:\n  test: value')
+            touch('.maintain.yaml', 'release:\n  test: {}')
 
             configuration = Configuration.load()
-            self.assertEqual(configuration.release.get('test'), 'value')
+            self.assertEqual(configuration.release.get('test'), {})
 
     def test_loading_file_config_maintain_yml(self):
         with temp_directory():
-            touch('.maintain/config.yml', 'release:\n  test: value')
+            touch('.maintain/config.yml', 'release:\n  test: {}')
 
             configuration = Configuration.load()
-            self.assertEqual(configuration.release.get('test'), 'value')
+            self.assertEqual(configuration.release.get('test'), {})
 
     def test_loading_file_config_maintain_yaml(self):
         with temp_directory():
-            touch('.maintain/config.yaml', 'release:\n  test: value')
+            touch('.maintain/config.yaml', 'release:\n  test: {}')
 
             configuration = Configuration.load()
-            self.assertEqual(configuration.release.get('test'), 'value')
+            self.assertEqual(configuration.release.get('test'), {})
 
     def test_loading_multiple_file(self):
         with temp_directory():
@@ -52,4 +52,14 @@ class ConfigurationTests(unittest.TestCase):
             touch('.maintain.yml', 'release: []')
 
             with self.assertRaises(Exception):
-                Configuration.load()
+                configuration.load()
+
+    # Validation
+
+    def test_validate_release_object(self):
+        with self.assertRaises(Exception):
+            Configuration.validate({'release': []})
+
+    def test_validate_release_releaser_object(self):
+        with self.assertRaises(Exception):
+            Configuration.validate({'release': {'test': []}})

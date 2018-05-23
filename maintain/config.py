@@ -8,8 +8,12 @@ SCHEMA = {
     'type': 'object',
     'properties': {
         'release': {
-            'type': 'object'
-            # TODO variable properties to object
+            'type': 'object',
+            'patternProperties': {
+                '': {
+                    'type': 'object'
+                }
+            }
         }
     }
 }
