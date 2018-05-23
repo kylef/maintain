@@ -11,5 +11,4 @@ before_script:
 - git config --global user.name "Travis"
 - git config --global user.email "travis@example.com"
 script:
-- nosetests
-- flake8 maintain tests --ignore=E501 --exclude=tests/release/fixtures
+- pytest --cov=maintain --pep8

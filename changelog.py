@@ -25,6 +25,7 @@ class Section(object):
     def __init__(self, name=None):
         self.name = name
 
+
 #
 # versions (all versions)
 # changelog <version> shows version changelog
