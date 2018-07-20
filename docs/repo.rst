@@ -8,6 +8,18 @@ print
 
 Subcommand to print all matched repositories, this is useful to test which repositories will be used for other operations.
 
+check
+-----
+
+Checks all repositories for unstaged, unsynced or untracked changes.
+
+.. code-block::
+
+    $ maintain repo check
+    goji
+     - Branch is not master
+     - Repository has unstaged changes
+
 run
 ---
 

@@ -65,3 +65,38 @@ def run(command, exit, silent):
                     break
 
     sys.exit(status)
+
+
+@repo.command()
+@click.option('--exit/--no-exit', default=False)
+def check(exit):
+    status = 0
+
+    for (name, path) in gather_repositories():
+        with chdir(path):
+            repo = Repo()
+            failures = []
+
+            if repo.head.ref != repo.heads.master:
+                failures.append('Branch is not master')
+
+            if repo.is_dirty():
+                failures.append('Repository has unstaged changes')
+
+            if len(repo.untracked_files) > 0:
+                failures.append('Repository has untracked files')
+
+            if repo.remotes.origin.refs.master.commit != repo.head.ref.commit:
+                failures.append('Branch has unsynced changes')
+
+            if len(failures) > 0:
+                status = 1
+                print(name)
+
+                for failure in failures:
+                    print(' - {}'.format(failure))
+
+                if exit:
+                    break
+
+    sys.exit(status)
