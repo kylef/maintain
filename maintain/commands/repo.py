@@ -14,15 +14,16 @@ def gather_repositories():
     searches for them in the current working directory.
     """
 
-    for (root, dirs, files) in os.walk('.'):
-        basename = os.path.basename(root)
-
-        if basename != '.git':
+    for (root, dirs, files) in os.walk('.', topdown=True):
+        if '.git' not in dirs:
             continue
 
-        path= os.path.split(root)[0]
+        for dir in list(dirs):
+            dirs.remove(dir)
+
+        path = os.path.split(root)[1]
         repo = os.path.basename(path)
-        yield (repo, path)
+        yield (repo, root)
 
 
 @click.group()
