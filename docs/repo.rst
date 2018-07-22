@@ -33,3 +33,12 @@ Options
 
 -s/--silent - Don't print subcommand output
 --exit - Exit after first failure (non zero exit)
+
+cp
+--
+
+Copies a file into each repository.
+
+.. code-block::
+
+    $ maintain repo cp contributing.md .github/CONTRIBUTING.md

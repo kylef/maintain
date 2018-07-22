@@ -1,6 +1,7 @@
 import os
 import sys
 import subprocess
+from shutil import copyfile
 
 import click
 from git import Repo
@@ -99,5 +100,25 @@ def check(exit):
 
                 if exit:
                     break
+
+    sys.exit(status)
+
+
+@repo.command()
+@click.argument('src', nargs=-1, type=click.Path(exists=True))
+@click.argument('dst', nargs=1, type=click.Path())
+def cp(src, dst):
+    status = 0
+
+    for (repo, path) in gather_repositories():
+        for filename in src:
+            destination = os.path.join(path, dst)
+
+            if os.path.exists(destination):
+                status = 1
+                print('Cannot copy to {}, {} exists'.format(repo, dst))
+                continue
+
+            copyfile(filename, destination)
 
     sys.exit(status)
