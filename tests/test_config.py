@@ -63,3 +63,25 @@ class ConfigurationTests(unittest.TestCase):
     def test_validate_release_releaser_object(self):
         with self.assertRaises(Exception):
             Configuration.validate({'release': {'test': []}})
+
+    def test_validate_valid_releaser(self):
+        Configuration.validate({
+            'release': {
+                'git': {
+                    'commit_format': 'Hello World',
+                    'tag_format': '{version}',
+                }
+            }
+        })
+
+    def test_validate_invalid_releaser(self):
+        with self.assertRaises(Exception):
+            Configuration.validate({
+                'release': {
+                    'git': {
+                        'commit_format': 'Hello World',
+                        'tag_format': '{version}',
+                        'unknown': 'x',
+                    }
+                }
+            })

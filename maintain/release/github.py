@@ -27,6 +27,21 @@ class GitHubReleaser(Releaser):
 
         return url.startswith('https://github.com') or url.startswith('git@github.com')
 
+    @classmethod
+    def schema(cls):
+        return {
+            'type': 'object',
+            'properties': {
+                'artefacts': {
+                    'type': 'array',
+                    'items': {
+                        'type': 'string'
+                    }
+                }
+            },
+            'additionalProperties': False,
+        }
+
     def __init__(self, config):
         if not cmd_exists('hub'):
             raise Exception('GitHub releases require hub. Missing dependency for hub: https://github.com/github/hub. Please install `hub` and try again.')

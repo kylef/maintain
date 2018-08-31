@@ -17,6 +17,21 @@ class GitReleaser(Releaser):
     def detect(cls):
         return os.path.exists('.git')
 
+    @classmethod
+    def schema(cls):
+        return {
+            'type': 'object',
+            'properties': {
+                'commit_format': {
+                    'type': 'string'
+                },
+                'tag_format': {
+                    'type': 'string'
+                },
+            },
+            'additionalProperties': False,
+        }
+
     def __init__(self, config=None):
         self.repo = Repo()
 
