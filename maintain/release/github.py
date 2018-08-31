@@ -58,7 +58,7 @@ class GitHubReleaser(Releaser):
                 fp.write(changelog.encode('utf-8'))
                 fp.flush()
 
-                command.append('-f')
+                command.append('-F')
                 command.append(fp.name)
 
                 invoke(command)
