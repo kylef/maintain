@@ -3,12 +3,15 @@ import os
 import yaml
 import jsonschema
 
+from maintain.release.aggregate import AggregateReleaser
+
 
 SCHEMA = {
     'type': 'object',
     'properties': {
         'release': {
             'type': 'object',
+            'properties': {},
             'patternProperties': {
                 '': {
                     'type': 'object'
@@ -17,6 +20,13 @@ SCHEMA = {
         }
     }
 }
+
+
+for releaser in AggregateReleaser.releasers():
+    if not releaser.schema():
+        continue
+
+    SCHEMA['properties']['release']['properties'][releaser.config_name()] = releaser.schema()
 
 
 class Configuration(object):
