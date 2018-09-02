@@ -39,7 +39,7 @@ def print_command():
     """
 
     for (repo, path) in gather_repositories():
-        print(repo)
+        click.echo(repo)
 
 
 @repo.command()
@@ -79,8 +79,11 @@ def check(exit):
             repo = Repo()
             failures = []
 
-            if repo.head.ref != repo.heads.master:
-                failures.append('Branch is not master')
+            if 'master' not in repo.heads:
+                failures.append('Repository does not have a master branch')
+            else:
+                if repo.head.ref != repo.heads.master:
+                    failures.append('Branch is not master')
 
             if repo.is_dirty():
                 failures.append('Repository has unstaged changes')
@@ -88,15 +91,16 @@ def check(exit):
             if len(repo.untracked_files) > 0:
                 failures.append('Repository has untracked files')
 
-            if repo.remotes.origin.refs.master.commit != repo.head.ref.commit:
-                failures.append('Branch has unsynced changes')
+            if 'origin' in repo.remotes:
+                if repo.remotes.origin.refs.master.commit != repo.head.ref.commit:
+                    failures.append('Branch has unsynced changes')
 
             if len(failures) > 0:
                 status = 1
-                print(name)
+                click.echo(name)
 
                 for failure in failures:
-                    print(' - {}'.format(failure))
+                    click.echo(' - {}'.format(failure))
 
                 if exit:
                     break
