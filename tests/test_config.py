@@ -1,8 +1,19 @@
 import unittest
+import mock
+
+from requests.models import Response
 
 from maintain.config import Configuration
 
 from tests.utils import temp_directory, touch
+
+
+def config_response(url):
+    assert(url == 'https://example.com/maintain.yaml')
+    response = Response()
+    response.status_code = 200
+    response._content = b'release:\n  git:\n    tag_format: v{version}'
+    return response
 
 
 class ConfigurationTests(unittest.TestCase):
@@ -51,8 +62,33 @@ class ConfigurationTests(unittest.TestCase):
         with temp_directory():
             touch('.maintain.yml', 'release: []')
 
-            with self.assertRaises(Exception):
-                configuration.load()
+            with self.assertRaisesRegexp(Exception, "Failed validating 'type'"):
+                Configuration.load()
+
+    # Loading Remote Config
+
+    @mock.patch('requests.get', mock.Mock(side_effect=config_response))
+    def test_loading_remote_https_file(self):
+        with temp_directory():
+            touch('.maintain.yaml', '$ref: https://example.com/maintain.yaml')
+
+            config = Configuration.load()
+
+        self.assertEqual(config.release['git'], {'tag_format': 'v{version}'})
+
+    def test_loading_remote_http_file(self):
+        with temp_directory():
+            touch('.maintain.yaml', '$ref: http://example.com/maintain.yaml')
+
+            with self.assertRaisesRegexp(Exception, 'Remote configuration reference http://example.com/maintain.yaml must be https'):
+                Configuration.load()
+
+    def test_loading_remote_local_file(self):
+        with temp_directory():
+            touch('.maintain.yaml', '$ref: config/maintain.yaml')
+
+            with self.assertRaisesRegexp(Exception, 'Remote configuration reference config/maintain.yaml must be https'):
+                Configuration.load()
 
     # Validation
 
