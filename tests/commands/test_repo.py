@@ -63,6 +63,51 @@ class eRepoommandTestCase(unittest.TestCase):
             self.assertEqual(result.output, 'Command failed: repo1\n')
             self.assertEqual(result.exit_code, 1)
 
+    def test_repo_run_check(self):
+        with self.runner.isolated_filesystem():
+            repo = Repo.init('repo1')
+            touch('repo1/README.md')
+            repo.index.add(['README.md'])
+            repo.index.commit('Initial commit')
+
+            repo = Repo.init('repo2')
+            touch('repo2/README.md')
+            repo.index.add(['README.md'])
+            repo.index.commit('Initial commit')
+
+            touch('repo1/dirty')
+
+            result = self.runner.invoke(cli, ['repo', 'run', '--check', 'touch test'])
+
+            self.assertEqual(result.output, 'repo1\n - Repository has untracked files\n')
+            self.assertEqual(result.exit_code, 1)
+
+            self.assertFalse(os.path.exists('repo1/test'))
+            self.assertTrue(os.path.exists('repo2/test'))
+
+    def test_repo_run_check_exit(self):
+        with self.runner.isolated_filesystem():
+            repo = Repo.init('repo1')
+            touch('repo1/README.md')
+            repo.index.add(['README.md'])
+            repo.index.commit('Initial commit')
+
+            repo = Repo.init('repo2')
+            touch('repo2/README.md')
+            repo.index.add(['README.md'])
+            repo.index.commit('Initial commit')
+
+            touch('repo1/dirty')
+
+            result = self.runner.invoke(cli, ['repo', 'run', '--exit', '--check', 'touch test'])
+
+            self.assertEqual(result.output, 'repo1\n - Repository has untracked files\n')
+            self.assertEqual(result.exit_code, 1)
+
+            self.assertFalse(os.path.exists('repo1/test'))
+            self.assertFalse(os.path.exists('repo2/test'))
+
+
     # check
 
     def test_repo_check(self):

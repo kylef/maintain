@@ -27,6 +27,36 @@ def gather_repositories():
         yield (repo, root)
 
 
+def check_repo(name, path):
+    repo = Repo(path)
+    failures = []
+
+    if 'master' not in repo.heads:
+        failures.append('Repository does not have a master branch')
+    else:
+        if repo.head.ref != repo.heads.master:
+            failures.append('Branch is not master')
+
+    if repo.is_dirty():
+        failures.append('Repository has unstaged changes')
+
+    if len(repo.untracked_files) > 0:
+        failures.append('Repository has untracked files')
+
+    if 'origin' in repo.remotes:
+        if repo.remotes.origin.refs.master.commit != repo.head.ref.commit:
+            failures.append('Branch has unsynced changes')
+
+    if len(failures) > 0:
+        click.echo(name)
+
+        for failure in failures:
+            click.echo(' - {}'.format(failure))
+
+    return len(failures) == 0
+
+
+
 @click.group()
 def repo():
     pass
@@ -46,7 +76,8 @@ def print_command():
 @click.argument('command', nargs=-1)
 @click.option('--exit/--no-exit', default=False)
 @click.option('--silent/--no-silent', '-s', default=False)
-def run(command, exit, silent):
+@click.option('--check/--no-check', default=False)
+def run(command, exit, silent, check):
     """
     Runs given command on all repos and checks status
 
@@ -56,6 +87,14 @@ def run(command, exit, silent):
     status = 0
 
     for (repo, path) in gather_repositories():
+        if check and not check_repo(repo, path):
+            status = 1
+
+            if exit:
+                break
+
+            continue
+
         with chdir(path):
             result = subprocess.run(command, shell=True, capture_output=silent)
             if result.returncode != 0:
@@ -69,41 +108,17 @@ def run(command, exit, silent):
     sys.exit(status)
 
 
-@repo.command()
+@repo.command('check')
 @click.option('--exit/--no-exit', default=False)
-def check(exit):
+def check_command(exit):
     status = 0
 
     for (name, path) in gather_repositories():
-        with chdir(path):
-            repo = Repo()
-            failures = []
+        if not check_repo(name, path):
+            status = 1
 
-            if 'master' not in repo.heads:
-                failures.append('Repository does not have a master branch')
-            else:
-                if repo.head.ref != repo.heads.master:
-                    failures.append('Branch is not master')
-
-            if repo.is_dirty():
-                failures.append('Repository has unstaged changes')
-
-            if len(repo.untracked_files) > 0:
-                failures.append('Repository has untracked files')
-
-            if 'origin' in repo.remotes:
-                if repo.remotes.origin.refs.master.commit != repo.head.ref.commit:
-                    failures.append('Branch has unsynced changes')
-
-            if len(failures) > 0:
-                status = 1
-                click.echo(name)
-
-                for failure in failures:
-                    click.echo(' - {}'.format(failure))
-
-                if exit:
-                    break
+            if exit:
+                break
 
     sys.exit(status)
 
