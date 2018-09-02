@@ -88,9 +88,6 @@ def ast_to_changelog(node):
             if not release:
                 raise Exception('Level 3 heading was not found within a release (level 2 heading).')
 
-            if heading.title.lower() not in ('enhancements', 'breaking', 'bug fixes'):
-                raise Exception('Changelog section {} is not supported.'.format(heading.title))
-
             release.sections.append(Section(heading.title))
 
     if release:

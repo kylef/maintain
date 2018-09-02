@@ -22,7 +22,7 @@ class ChangelogReleaserTestCase(unittest.TestCase):
     def test_detects_version_file(self):
         with temp_directory():
             touch('CHANGELOG.md')
-            self.assertTrue(ChangelogReleaser().detect())
+            self.assertTrue(ChangelogReleaser.detect())
 
     def test_determine_current_version(self):
         fixture_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'fixtures')
