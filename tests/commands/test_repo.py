@@ -9,7 +9,7 @@ from maintain.process import chdir
 from ..utils import temp_directory, git_bare_repo, touch
 
 
-class eRepoommandTestCase(unittest.TestCase):
+class RepoCommandTestCase(unittest.TestCase):
     def setUp(self):
         self.runner = CliRunner()
 
@@ -23,6 +23,7 @@ class eRepoommandTestCase(unittest.TestCase):
 
             repos = sorted(result.output.strip().split('\n'))
 
+            self.assertIsNone(result.exception)
             self.assertEqual(repos, ['repo1', 'repo2', 'repo3'])
             self.assertEqual(result.exit_code, 0)
 
@@ -35,6 +36,7 @@ class eRepoommandTestCase(unittest.TestCase):
 
             result = self.runner.invoke(cli, ['repo', 'run', 'touch test'])
 
+            self.assertIsNone(result.exception)
             self.assertEqual(result.output, '')
             self.assertEqual(result.exit_code, 0)
 
@@ -119,6 +121,7 @@ class eRepoommandTestCase(unittest.TestCase):
 
             result = self.runner.invoke(cli, ['repo', 'check'])
 
+            self.assertIsNone(result.exception)
             self.assertEqual(result.output, '')
             self.assertEqual(result.exit_code, 0)
 
@@ -183,6 +186,7 @@ class eRepoommandTestCase(unittest.TestCase):
 
             result = self.runner.invoke(cli, ['repo', 'cp', 'README.md', 'README'])
 
+            self.assertIsNone(result.exception)
             self.assertEqual(result.output, '')
             self.assertEqual(result.exit_code, 0)
 
