@@ -20,12 +20,37 @@ class ChangelogReleaser(Releaser):
     def detect(cls):
         return os.path.exists(cls.path)
 
+    @classmethod
+    def schema(cls):
+        return {
+            'type': 'object',
+            'properties': {
+                'sections': {
+                    'type': 'object',
+                    'patternProperties': {
+                        '': {
+                            'enum': [cls.MAJOR, cls.MINOR, cls.PATCH]
+                        },
+                    },
+                },
+            },
+            'additionalProperties': False,
+        }
+
     def __init__(self, config=None):
         self.sections = {
             'breaking': 'major',
             'enhancements': 'minor',
             'bug fixes': 'patch',
         }
+
+        if config:
+            sections = config.get('sections', {})
+            if len(sections) > 0:
+                self.sections = {}
+
+                for section in sections:
+                    self.sections[section.lower()] = sections[section]
 
         changelog = parse_changelog(self.path)
         self.validate_changelog(changelog)

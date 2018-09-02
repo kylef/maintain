@@ -91,3 +91,36 @@ class ChangelogReleaserTestCase(unittest.TestCase):
             shutil.copyfile(changelog, 'CHANGELOG.md')
             ChangelogReleaser().bump('1.0.1')
             self.assertTrue(filecmp.cmp('CHANGELOG.md', bumped_changelog))
+
+    def test_determine_next_version_major_custom_sections(self):
+        with temp_directory():
+            touch('CHANGELOG.md', '# Changelog\n## Master\n### Section\n## 1.0.0\n')
+            changelog = ChangelogReleaser(config={
+                'sections': {
+                    'section': 'major'
+                }
+            })
+            version = changelog.determine_next_version()
+            self.assertEqual(version, Version('2.0.0'))
+
+    def test_determine_next_version_minor_custom_sections(self):
+        with temp_directory():
+            touch('CHANGELOG.md', '# Changelog\n## Master\n### Section\n## 1.0.0\n')
+            changelog = ChangelogReleaser(config={
+                'sections': {
+                    'section': 'minor'
+                }
+            })
+            version = changelog.determine_next_version()
+            self.assertEqual(version, Version('1.1.0'))
+
+    def test_determine_next_version_patch_custom_sections(self):
+        with temp_directory():
+            touch('CHANGELOG.md', '# Changelog\n## Master\n### Section\n## 1.0.0\n')
+            changelog = ChangelogReleaser(config={
+                'sections': {
+                    'section': 'patch'
+                }
+            })
+            version = changelog.determine_next_version()
+            self.assertEqual(version, Version('1.0.1'))

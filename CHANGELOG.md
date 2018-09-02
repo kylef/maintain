@@ -17,6 +17,16 @@
 - Hooks are now passed the VERSION as an environment variable.
 - Hooks can now be placed in files inside `.maintain/hooks` such as
   `.maintain/hooks/pre_release`.
+- Changelog releaser allows you to specify custom sections.
+
+    ```yaml
+    release:
+      changelog:
+        sections:
+          'Breaking': major
+          'Enhancements': minor
+          'Bug Fixes': patch
+    ```
 
 
 ## 0.2.0 (2016-05-10)

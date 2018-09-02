@@ -3,6 +3,20 @@
 Changelog releaser allows you to update a
 [semantic changelog](http://github.com/kylef/changelog).
 
+## Configuration
+
+Changelog Releaser allows you to specify the types of changelog sections and
+their underlying semantic meaning.
+
+```yaml
+release:
+  changelog:
+    sections:
+      'Breaking': major
+      'Enhancements': minor
+      'Bug Fixes': patch
+```
+
 ## Detect
 
 Detects a `CHANGELOG.md` file in the root of your library.
