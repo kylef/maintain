@@ -73,6 +73,7 @@ def ast_to_changelog(node):
         raise Exception('Changelog has multiple level 1 headings.')
 
     release = None
+    last_heading_level = 1
 
     for heading in headings:
         if heading.level == 2:
@@ -92,6 +93,10 @@ def ast_to_changelog(node):
                 raise Exception('Changelog section {} is not supported.'.format(heading.title))
 
             release.sections.append(Section(heading.title))
+
+        if heading.level > last_heading_level + 1:
+            raise Exception('Changelog heading level jumps from level {} to level {}. Must jump one level per heading.'.format(last_heading_level, heading.level))
+        last_heading_level = heading.level
 
     if release:
         changelog.releases.append(release)

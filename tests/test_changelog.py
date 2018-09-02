@@ -32,3 +32,33 @@ class ChangelogTestCase(unittest.TestCase):
             changelog = extract_last_changelog('CHANGELOG.md')
 
         self.assertEqual(changelog, 'The Release Information')
+
+    # Validation
+
+    def test_disallows_multiple_h1s(self):
+        with temp_directory():
+            touch('CHANGELOG.md', '# My Changelog\n# Current Release\n')
+
+            with self.assertRaisesRegexp(Exception, 'Changelog has multiple level 1 headings.'):
+                parse_changelog('CHANGELOG.md')
+
+    def test_disallows_missing_h1(self):
+        with temp_directory():
+            touch('CHANGELOG.md', 'Hello World')
+
+            with self.assertRaisesRegexp(Exception, 'Changelog does not start with a level 1 heading, including the changelog name.'):
+                parse_changelog('CHANGELOG.md')
+
+    def test_disallows_heading_level_3_without_release(self):
+        with temp_directory():
+            touch('CHANGELOG.md', '# H1\n### H3\n')
+
+            with self.assertRaisesRegexp(Exception, 'Level 3 heading was not found within a release \(level 2 heading\)'):
+                parse_changelog('CHANGELOG.md')
+
+    def test_disallows_heading_level_jump(self):
+        with temp_directory():
+            touch('CHANGELOG.md', '# H1\n#### H3\n')
+
+            with self.assertRaisesRegexp(Exception, 'Changelog heading level jumps from level 1 to level 4. Must jump one level per heading.'):
+                parse_changelog('CHANGELOG.md')
