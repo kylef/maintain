@@ -35,8 +35,8 @@ class Configuration(object):
         paths = [
             '.maintain.yml',
             '.maintain.yaml',
-            '.maintain/config.yml',
-            '.maintain/config.yaml',
+            os.path.join('.maintain', 'config.yml'),
+            os.path.join('.maintain', 'config.yaml'),
         ]
 
         found_paths = list(filter(os.path.exists, paths))
