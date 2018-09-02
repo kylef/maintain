@@ -56,7 +56,6 @@ def check_repo(name, path):
     return len(failures) == 0
 
 
-
 @click.group()
 def repo():
     pass

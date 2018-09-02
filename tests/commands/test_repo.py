@@ -109,7 +109,6 @@ class RepoCommandTestCase(unittest.TestCase):
             self.assertFalse(os.path.exists('repo1/test'))
             self.assertFalse(os.path.exists('repo2/test'))
 
-
     # check
 
     def test_repo_check(self):
