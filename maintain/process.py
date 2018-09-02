@@ -27,15 +27,3 @@ class chdir(object):
 
     def __exit__(self, typ, value, traceback):
         os.chdir(self.working_directory)
-
-
-class temp_directory(object):
-    def __enter__(self):
-        self.working_directory = os.getcwd()
-        self.pathname = tempfile.mkdtemp()
-        os.chdir(self.pathname)
-        return self.pathname
-
-    def __exit__(self, typ, value, traceback):
-        os.chdir(self.working_directory)
-        shutil.rmtree(self.pathname)
