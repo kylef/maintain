@@ -16,6 +16,20 @@ class Releaser(object):
 
         return False
 
+    @classmethod
+    def config_name(cls):
+        """
+        The releasers configuration key.
+        """
+        return cls.name.lower().replace(' ', '_')
+
+    @classmethod
+    def schema(cls):
+        """
+        Returns a schema for validating the configuration for the releaser.
+        """
+        return None
+
     def __init__(self, config=None):
         pass
 

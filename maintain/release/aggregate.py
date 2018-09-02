@@ -42,7 +42,7 @@ class AggregateReleaser(Releaser):
 
         def get_config(releaser):
             if config:
-                return config.get(releaser.name.lower().replace(' ', '_'), {})
+                return config.get(releaser.config_name(), {})
 
             return {}
 

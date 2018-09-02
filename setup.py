@@ -22,6 +22,7 @@ setup(
         'pyyaml',
         'commonmark==0.6.3',
         'gitpython',
+        'jsonschema',
     ],
     author='Kyle Fuller',
     author_email='kyle@fuller.li',

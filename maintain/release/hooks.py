@@ -15,6 +15,30 @@ class HookReleaser(Releaser):
     def detect(cls):
         return True
 
+    @classmethod
+    def schema(cls):
+        hook = {
+            'type': 'object',
+            'properties': {
+                'pre': {
+                    'type': 'array',
+                    'items': {'type': 'string'}
+                },
+                'post': {
+                    'type': 'array',
+                    'items': {'type': 'string'}
+                }
+            }
+        }
+        return {
+            'type': 'object',
+            'properties': {
+                'bump': hook,
+                'publish': hook,
+            },
+            'additionalProperties': False,
+        }
+
     def __init__(self, config):
         self.bump_commands = []
         self.release_commands = []
