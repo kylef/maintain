@@ -9,11 +9,64 @@ from maintain.changelog import parse_changelog
 
 
 class ChangelogReleaser(Releaser):
+    name = 'changelog'
     path = 'CHANGELOG.md'
+
+    MAJOR = 'major'
+    MINOR = 'minor'
+    PATCH = 'patch'
 
     @classmethod
     def detect(cls):
         return os.path.exists(cls.path)
+
+    @classmethod
+    def schema(cls):
+        return {
+            'type': 'object',
+            'properties': {
+                'sections': {
+                    'type': 'object',
+                    'patternProperties': {
+                        '': {
+                            'enum': [cls.MAJOR, cls.MINOR, cls.PATCH]
+                        },
+                    },
+                },
+            },
+            'additionalProperties': False,
+        }
+
+    def __init__(self, config=None):
+        self.sections = {
+            'breaking': 'major',
+            'enhancements': 'minor',
+            'bug fixes': 'patch',
+        }
+
+        if config:
+            sections = config.get('sections', {})
+            if len(sections) > 0:
+                self.sections = {}
+
+                for section in sections:
+                    self.sections[section.lower()] = sections[section]
+
+        changelog = parse_changelog(self.path)
+        self.validate_changelog(changelog)
+
+    def validate_changelog(self, changelog):
+        for release in changelog.releases:
+            found = []
+
+            for section in release.sections:
+                if section.name.lower() not in self.sections.keys():
+                    raise Exception('Changelog section {} is not supported.'.format(section.name))
+
+                if section.name.lower() in found:
+                    raise Exception('Changelog section {} is duplicated in release {}'.format(section.name, release.name))
+
+                found.append(section.name.lower())
 
     def determine_current_version(self):
         changelog = parse_changelog(self.path)
@@ -34,20 +87,29 @@ class ChangelogReleaser(Releaser):
             if release.name != 'Master':
                 continue
 
-            breaking = release.find_section('Breaking')
-            enhancements = release.find_section('Enhancements')
-            bug_fixes = release.find_section('Bug Fixes')
+            major = False
+            minor = False
+            patch = False
 
-            if breaking and current_version.major == 0:
-                return current_version.next_minor()
+            for section in self.sections:
+                if release.find_section(section):
+                    if self.sections[section] == self.MAJOR:
+                        major = True
+                    elif self.sections[section] == self.MINOR:
+                        minor = True
+                    if self.sections[section] == self.PATCH:
+                        patch = True
 
-            if breaking:
+            if major:
+                if current_version.major == 0:
+                    return current_version.next_minor()
+
                 return current_version.next_major()
 
-            if enhancements:
+            if minor:
                 return current_version.next_minor()
 
-            if bug_fixes:
+            if patch:
                 return current_version.next_patch()
 
         return None
