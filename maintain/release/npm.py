@@ -9,6 +9,8 @@ from maintain.process import invoke
 
 
 class NPMReleaser(Releaser):
+    name = 'npm'
+
     @classmethod
     def detect(cls):
         return os.path.exists('package.json')
