@@ -27,6 +27,7 @@
           'Enhancements': minor
           'Bug Fixes': patch
     ```
+- Configuration file can now be passed via the `--config` option.
 
 
 ## 0.2.0 (2016-05-10)

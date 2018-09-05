@@ -3,7 +3,7 @@ import unittest
 from click.testing import CliRunner
 from git import Repo
 
-from maintain.commands.release import release
+from maintain.commands import cli
 from ..utils import temp_directory, git_bare_repo, touch
 
 
@@ -13,14 +13,14 @@ class ReleaseCommandTestCase(unittest.TestCase):
 
     def test_requires_version_with_bump(self):
         with self.runner.isolated_filesystem():
-            result = self.runner.invoke(release, [])
+            result = self.runner.invoke(cli, ['release'])
 
             self.assertTrue('Error: Missing argument version.' in result.output)
             self.assertEqual(result.exit_code, 2)
 
     def test_version_must_be_semantic_version(self):
         with self.runner.isolated_filesystem():
-            result = self.runner.invoke(release, ['foo'])
+            result = self.runner.invoke(cli, ['release', 'foo'])
 
             self.assertTrue('Error: Invalid value: foo is not a semantic version' in result.output, result.output)
             self.assertEqual(result.exit_code, 2)
@@ -28,7 +28,7 @@ class ReleaseCommandTestCase(unittest.TestCase):
     def test_bump_version_from_prerelease(self):
         with self.runner.isolated_filesystem():
             touch('VERSION', '1.0.0-beta.1\n')
-            result = self.runner.invoke(release, ['patch'])
+            result = self.runner.invoke(cli, ['release', 'patch'])
 
             self.assertTrue('Error: Current version 1.0.0-beta.1 contains prerelease or build' in result.output, result.output)
             self.assertEqual(result.exit_code, 1)
@@ -42,7 +42,7 @@ class ReleaseCommandTestCase(unittest.TestCase):
             repo.index.add(['VERSION'])
             repo.index.commit('Initial commit')
 
-            result = self.runner.invoke(release, ['2.0.0'])
+            result = self.runner.invoke(cli, ['release', '2.0.0'])
             self.assertIsNone(result.exception)
             self.assertEqual(result.exit_code, 0)
 
@@ -65,7 +65,7 @@ class ReleaseCommandTestCase(unittest.TestCase):
                 repo.create_remote('origin', url=bare_repo)
                 repo.remotes.origin.push(repo.refs.master)
 
-                result = self.runner.invoke(release, ['2.0.0'])
+                result = self.runner.invoke(cli, ['release', '2.0.0'])
                 self.assertIsNone(result.exception)
                 self.assertEqual(result.exit_code, 0)
 

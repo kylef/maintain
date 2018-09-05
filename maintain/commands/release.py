@@ -6,7 +6,6 @@ import click
 from click.exceptions import MissingParameter, ClickException
 from semantic_version import Version
 
-from maintain.config import Configuration
 from maintain.release.aggregate import AggregateReleaser
 from maintain.release.git_releaser import GitReleaser
 from maintain.release.github import GitHubReleaser
@@ -21,7 +20,8 @@ logger = logging.getLogger('maintain.release')
 @click.option('--bump/--no-bump', default=True)
 @click.option('--pull-request/--no-pull-request', default=False)
 @click.option('--verbose/--no-verbose', default=False)
-def release(version, dry_run, bump, pull_request, verbose):
+@click.pass_obj
+def release(config, version, dry_run, bump, pull_request, verbose):
     formatter = logging.Formatter('[%(levelname)s] %(message)s')
     handler = logging.StreamHandler(stream=sys.stdout)
     handler.setFormatter(formatter)
@@ -29,8 +29,6 @@ def release(version, dry_run, bump, pull_request, verbose):
 
     if verbose:
         logger.setLevel(logging.DEBUG)
-
-    config = Configuration.load()
 
     releaser = AggregateReleaser(config.release)
 
