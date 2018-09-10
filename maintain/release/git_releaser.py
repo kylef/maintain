@@ -69,7 +69,7 @@ class GitReleaser(Releaser):
         if self.repo.is_dirty():
             message = self.commit_format.format(version=new_version)
 
-            self.repo.index.add('*')
+            self.repo.git.add('.')
             self.repo.index.commit(message)
 
             logger.info('Created Commit: {}'.format(message))
