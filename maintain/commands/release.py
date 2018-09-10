@@ -58,9 +58,13 @@ def release(config, version, dry_run, bump, pull_request, verbose):
     if pull_request and not github_releaser:
         raise Exception('Used --pull-request and no GitHub remote')
 
-    if not version and bump:
-        raise MissingParameter(param_hint='version', param_type='argument')
-    elif version == 'semver':
+    if not version:
+        if bump:
+            raise MissingParameter(param_hint='version', param_type='argument')
+
+        version = releaser.determine_current_version()
+
+    if version == 'semver':
         version = releaser.determine_next_version()
         if not version:
             raise Exception('Could not determine the next semantic version.')
@@ -69,7 +73,7 @@ def release(config, version, dry_run, bump, pull_request, verbose):
             version = bump_version(releaser.determine_current_version(), version)
         else:
             releaser.determine_current_version()
-    else:
+    elif not isinstance(version, Version):
         try:
             version = Version(version)
         except ValueError:
