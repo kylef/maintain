@@ -30,8 +30,8 @@ class AggregateReleaser(Releaser):
             NPMReleaser,
             CReleaser,
             ChangelogReleaser,
-            GitReleaser,
             GitHubReleaser,
+            GitReleaser,
         ]
 
     @classmethod
@@ -125,11 +125,11 @@ class AggregateReleaser(Releaser):
             releaser.post_bump(new_version)
 
     def release(self, new_version):
-        for releaser in self.releasers:
+        for releaser in reversed(self.releasers):
             releaser.pre_release(new_version)
 
-        for releaser in self.releasers:
+        for releaser in reversed(self.releasers):
             releaser.release(new_version)
 
-        for releaser in self.releasers:
+        for releaser in reversed(self.releasers):
             releaser.post_release(new_version)
