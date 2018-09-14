@@ -1,7 +1,8 @@
 import os
 
-import yaml
 import jsonschema
+import requests
+import yaml
 
 from maintain.release.aggregate import AggregateReleaser
 
@@ -51,10 +52,23 @@ class Configuration(object):
         return cls.fromfile(found_paths[0])
 
     @classmethod
+    def fromurl(cls, url):
+        if not url.startswith('https://'):
+            raise Exception('Remote configuration reference {} must be https'.format(url))
+
+        response = requests.get(url)
+        response.raise_for_status()
+        return yaml.load(response.text)
+
+    @classmethod
     def fromfile(cls, path):
         with open(path) as fp:
             content = fp.read()
             content = yaml.load(content)
+
+            if '$ref' in content:
+                content = cls.fromurl(content['$ref'])
+
             cls.validate(content)
 
         return cls(**content)
