@@ -54,7 +54,7 @@ class Configuration(object):
     def fromfile(cls, path):
         with open(path) as fp:
             content = fp.read()
-            content = yaml.load(content)
+            content = yaml.safe_load(content)
             cls.validate(content)
 
         return cls(**content)
