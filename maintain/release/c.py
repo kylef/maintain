@@ -28,7 +28,7 @@ class CReleaser(Releaser):
     def detect(cls):
         return len(cls.version_headers()) > 0
 
-    def __init__(self):
+    def __init__(self, config=None):
         self.verify()
 
     def verify(self):
