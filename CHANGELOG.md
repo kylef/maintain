@@ -1,5 +1,12 @@
 # Maintain Changelog
 
+## TBD
+
+### Enhancements
+
+- GitHub release will now replace environment variables such as `$VERSION` into
+  artefact file names.
+
 ## 0.4.0 (2024-12-21)
 
 ### Breaking

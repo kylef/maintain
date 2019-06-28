@@ -1,11 +1,11 @@
 import logging
+import os
 import sys
 
 import click
 from click.exceptions import ClickException, MissingParameter
 from semantic_version import Version
 
-from maintain.git import get_default_branch
 from maintain.release.aggregate import AggregateReleaser
 from maintain.release.git_releaser import GitReleaser
 from maintain.release.github import GitHubReleaser
@@ -94,6 +94,8 @@ def release(
                 )
             )
             exit(1)
+
+    os.environ["VERSION"] = str(version)
 
     if bump:
         logger.info("Bumping {}".format(version))

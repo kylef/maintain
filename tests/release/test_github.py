@@ -1,6 +1,8 @@
 import os
 import unittest
 
+from semantic_version import Version
+
 from maintain.release.github import GitHubReleaser
 
 from ..utils import git_repo, temp_directory, touch
@@ -44,9 +46,60 @@ class GitHubReleaserTestCase(unittest.TestCase):
         os.environ["PATH"] = path
 
     def test_initialisation_with_hub(self):
+        old_path = os.environ["PATH"]
+
         with temp_directory() as path:
             os.environ["PATH"] = path
             touch("hub")
             os.chmod("hub", 755)
 
             GitHubReleaser(config={})
+
+        os.environ["PATH"] = old_path
+
+    # Release
+
+    def test_release_hub_command(self):
+        releaser = GitHubReleaser(config={})
+
+        command = releaser.release_command(Version("1.0.0"))
+
+        self.assertEqual(command, ["hub", "release", "create", "1.0.0"])
+
+    def test_release_hub_command_prerelease(self):
+        releaser = GitHubReleaser(config={})
+
+        command = releaser.release_command(Version("1.0.0-rc.1"))
+
+        self.assertEqual(command, ["hub", "release", "create", "-p", "1.0.0-rc.1"])
+
+    def test_release_hub_command_artefact(self):
+        releaser = GitHubReleaser(
+            config={
+                "artefacts": [
+                    "build.tar.xz",
+                ],
+            }
+        )
+
+        command = releaser.release_command(Version("1.0.0"))
+
+        self.assertEqual(
+            command, ["hub", "release", "create", "-a", "build.tar.xz", "1.0.0"]
+        )
+
+    def test_release_hub_command_artefact_version_substitute(self):
+        releaser = GitHubReleaser(
+            config={
+                "artefacts": [
+                    "build-$VERSION.tar.xz",
+                ],
+            }
+        )
+
+        os.environ["VERSION"] = "1.0.0"
+        command = releaser.release_command(Version("1.0.0"))
+
+        self.assertEqual(
+            command, ["hub", "release", "create", "-a", "build-1.0.0.tar.xz", "1.0.0"]
+        )
