@@ -1,0 +1,50 @@
+version: 2
+
+aliases:
+  - &test
+    steps:
+      - checkout
+      - run: pip install -r dev_requirements.txt --user
+      - run: |
+          git config --global user.name "CircleCI"
+          git config --global user.email "circleci@example.com"
+          export PATH="$(python -c 'import site; print(site.USER_BASE)')/bin:$PATH"
+          pytest --cov=maintain --pep8
+
+workflows:
+  version: 2
+
+  maintain:
+    jobs:
+      - test-python3.7
+      - test-python3.6
+      - test-python3.5
+      - test-python3.5
+      - test-python3.4
+      - test-python2.7
+
+jobs:
+  test-python3.7:
+    <<: *test
+    docker:
+      - image: circleci/python:3.7
+
+  test-python3.6:
+    <<: *test
+    docker:
+      - image: circleci/python:3.6
+
+  test-python3.5:
+    <<: *test
+    docker:
+      - image: circleci/python:3.5
+
+  test-python3.4:
+    <<: *test
+    docker:
+      - image: circleci/python:3.4
+
+  test-python2.7:
+    <<: *test
+    docker:
+      - image: circleci/python:2.7
