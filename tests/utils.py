@@ -1,8 +1,13 @@
 import os
+import sys
 import tempfile
 import shutil
 
 from git import Repo
+
+
+if sys.version_info.major == 2:
+    FileExistsError = OSError
 
 
 class temp_directory(object):
