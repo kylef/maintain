@@ -16,6 +16,8 @@ def gather_repositories():
     """
 
     for (root, dirs, files) in os.walk('.', topdown=True):
+        dirs.sort()
+
         if '.git' not in dirs:
             continue
 
