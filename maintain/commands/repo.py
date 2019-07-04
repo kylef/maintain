@@ -87,6 +87,9 @@ def run(command, exit, silent, check):
 
     status = 0
 
+    if sys.version_info.major == 2:
+        raise click.ClickException('repo run is only supported on Python 3')
+
     for (repo, path) in gather_repositories():
         if check and not check_repo(repo, path):
             status = 1
