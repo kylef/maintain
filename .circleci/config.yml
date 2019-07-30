@@ -5,10 +5,13 @@ aliases:
     steps:
       - checkout
       - run: pip install -r dev_requirements.txt --user
+      - run:
+          curl -L https://github.com/github/hub/releases/download/v2.12.1/hub-linux-amd64-2.12.1.tgz | tar zxvfO - hub-linux-amd64-2.12.1/bin/hub > ~/.local/bin/hub
+          chmod +x ~/.local/bin/hub
       - run: |
           git config --global user.name "CircleCI"
           git config --global user.email "circleci@example.com"
-          export PATH="$(python -c 'import site; print(site.USER_BASE)')/bin:$PATH"
+          export PATH="$(python -c 'import site; print(site.USER_BASE)')/bin:$HOME/.local/bin:$PATH"
           pytest --cov=maintain --pep8
 
 workflows:

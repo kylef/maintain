@@ -1,5 +1,12 @@
 # Maintain Changelog
 
+## Master
+
+### Enhancements
+
+- GitHub release will now replace environment variables such as `$VERSION` into
+  artefact file names.
+
 ## 0.3.0 (2018-09-11)
 
 ### Breaking

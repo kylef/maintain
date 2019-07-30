@@ -86,6 +86,8 @@ def release(config, version, dry_run, bump, pull_request, verbose):
                        'is not equal to current version {} != {}'.format(current_version, version))
             exit(1)
 
+    os.environ['VERSION'] = str(version)
+
     if bump:
         logger.info('Bumping {}'.format(version))
 
