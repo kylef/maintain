@@ -1,7 +1,7 @@
 import re
 from collections import namedtuple
 
-import CommonMark
+import commonmark
 
 
 class Changelog(object):
@@ -43,13 +43,13 @@ def ast_to_headings(node):
         entering = event['entering']
         node = event['node']
 
-        if node.t == 'Heading':
+        if node.t == 'heading':
             if entering:
                 level = node.level
             else:
                 level = None
         elif level:
-            if node.t != 'Text':
+            if node.t != 'text':
                 raise Exception('Unexpected node {}, only text may be within a heading.'.format(node.t))
 
             headings.append(Heading(level=level, title=node.literal))
@@ -103,14 +103,14 @@ def ast_to_changelog(node):
 
 def parse_changelog(path):
     with open(path, 'r') as fp:
-        parser = CommonMark.Parser()
+        parser = commonmark.Parser()
         ast = parser.parse(fp.read())
         return ast_to_changelog(ast)
 
 
 def extract_last_changelog(path):
     with open(path, 'r') as fp:
-        parser = CommonMark.Parser()
+        parser = commonmark.Parser()
         content = fp.read()
 
     changelog = ast_to_changelog(parser.parse(content))
