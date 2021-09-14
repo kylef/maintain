@@ -1,20 +1,22 @@
 import os
 import subprocess
 import tempfile
+from typing import Optional
 
 from git import Repo
 from git.exc import InvalidGitRepositoryError
+from semantic_version import Version
 
+from maintain.changelog import extract_last_changelog
 from maintain.process import invoke
 from maintain.release.base import Releaser
-from maintain.changelog import extract_last_changelog
 
 
 class GitHubReleaser(Releaser):
     name = 'GitHub'
 
     @classmethod
-    def detect(cls):
+    def detect(cls) -> bool:
         try:
             repo = Repo()
         except InvalidGitRepositoryError:
@@ -51,10 +53,10 @@ class GitHubReleaser(Releaser):
     def determine_current_version(self):
         pass
 
-    def bump(self, new_version):
+    def bump(self, new_version: Version) -> None:
         pass
 
-    def release(self, new_version):
+    def release(self, new_version: Version) -> None:
         command = ['hub', 'release', 'create']
 
         if new_version.prerelease:
@@ -81,17 +83,17 @@ class GitHubReleaser(Releaser):
 
         invoke(command)
 
-    def create_pull_request(self, version):
+    def create_pull_request(self, version: Version) -> None:
         invoke(['hub', 'pull-request', '-m', 'Release {}'.format(version)])
 
-    def get_changelog(self):
+    def get_changelog(self) -> Optional[str]:
         if os.path.exists('CHANGELOG.md'):
             return extract_last_changelog('CHANGELOG.md')
 
         return None
 
 
-def cmd_exists(cmd):
+def cmd_exists(cmd: str) -> bool:
     result = subprocess.call('type {}'.format(cmd), shell=True,
                              stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     return result == 0

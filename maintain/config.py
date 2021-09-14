@@ -1,10 +1,9 @@
 import os
 
-import yaml
 import jsonschema
+import yaml
 
 from maintain.release.aggregate import AggregateReleaser
-
 
 SCHEMA = {
     'type': 'object',
@@ -31,7 +30,7 @@ for releaser in AggregateReleaser.releasers():
 
 class Configuration(object):
     @classmethod
-    def load(cls):
+    def load(cls) -> 'Configuration':
         paths = [
             '.maintain.yml',
             '.maintain.yaml',
@@ -45,22 +44,22 @@ class Configuration(object):
             return cls()
 
         if len(found_paths) > 1:
-            paths = ', '.join(found_paths)
-            raise Exception('Multiple configuration files found: {}'.format(paths))
+            p = ', '.join(found_paths)
+            raise Exception('Multiple configuration files found: {}'.format(p))
 
         return cls.fromfile(found_paths[0])
 
     @classmethod
-    def fromfile(cls, path):
+    def fromfile(cls, path: str) -> 'Configuration':
         with open(path) as fp:
             content = fp.read()
-            content = yaml.safe_load(content)
-            cls.validate(content)
+            config = yaml.safe_load(content)
+            cls.validate(config)
 
-        return cls(**content)
+        return cls(**config)
 
     @classmethod
-    def validate(cls, config):
+    def validate(cls, config) -> bool:
         jsonschema.validate(config, SCHEMA)
         return True
 

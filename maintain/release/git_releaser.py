@@ -1,11 +1,11 @@
-import os
 import logging
+import os
 
 from git import Repo
+from semantic_version import Version
 
-from maintain.release.base import Releaser
 from maintain.process import invoke
-
+from maintain.release.base import Releaser
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +14,7 @@ class GitReleaser(Releaser):
     name = 'git'
 
     @classmethod
-    def detect(cls):
+    def detect(cls) -> bool:
         return os.path.exists('.git')
 
     @classmethod
@@ -32,7 +32,7 @@ class GitReleaser(Releaser):
             'additionalProperties': False,
         }
 
-    def __init__(self, config=None):
+    def __init__(self, config=None) -> None:
         self.repo = Repo()
 
         self.commit_format = (config or {}).get('commit_format', 'Release {version}')
@@ -54,7 +54,7 @@ class GitReleaser(Releaser):
             if self.repo.remotes.origin.refs.master.commit != self.repo.head.ref.commit:
                 raise Exception('Master has unsynced changes.')
 
-    def has_origin(self):
+    def has_origin(self) -> bool:
         try:
             self.repo.remotes.origin
         except AttributeError:
@@ -62,10 +62,10 @@ class GitReleaser(Releaser):
 
         return True
 
-    def determine_current_version(self):
+    def determine_current_version(self) -> None:
         return None
 
-    def bump(self, new_version):
+    def bump(self, new_version: Version) -> None:
         if self.repo.is_dirty():
             message = self.commit_format.format(version=new_version)
 
@@ -74,7 +74,7 @@ class GitReleaser(Releaser):
 
             logger.info('Created Commit: {}'.format(message))
 
-    def release(self, version):
+    def release(self, version: Version) -> None:
         tag_name = self.tag_format.format(version=version)
         tag = self.repo.create_tag(tag_name, message='Release {}'.format(version))
 
@@ -85,5 +85,5 @@ class GitReleaser(Releaser):
             self.repo.remotes.origin.push(tag)
 
 
-def git_update():
+def git_update() -> None:
     invoke(['git', 'pull', 'origin', 'master'])

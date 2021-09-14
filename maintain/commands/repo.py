@@ -1,6 +1,6 @@
 import os
-import sys
 import subprocess
+import sys
 from shutil import copyfile
 
 import click
@@ -29,7 +29,7 @@ def gather_repositories():
         yield (repo, root)
 
 
-def check_repo(name, path):
+def check_repo(name: str, path: str) -> bool:
     repo = Repo(path)
     failures = []
 
@@ -59,12 +59,12 @@ def check_repo(name, path):
 
 
 @click.group()
-def repo():
+def repo() -> None:
     pass
 
 
 @repo.command('print')
-def print_command():
+def print_command() -> None:
     """
     Prints all repos.
     """
@@ -78,7 +78,7 @@ def print_command():
 @click.option('--exit/--no-exit', default=False)
 @click.option('--silent/--no-silent', '-s', default=False)
 @click.option('--check/--no-check', default=False)
-def run(command, exit, silent, check):
+def run(command, exit: bool, silent: bool, check: bool):
     """
     Runs given command on all repos and checks status
 
@@ -114,7 +114,7 @@ def run(command, exit, silent, check):
 
 @repo.command('check')
 @click.option('--exit/--no-exit', default=False)
-def check_command(exit):
+def check_command(exit: bool) -> None:
     status = 0
 
     for (name, path) in gather_repositories():
@@ -130,7 +130,7 @@ def check_command(exit):
 @repo.command()
 @click.argument('src', nargs=-1, type=click.Path(exists=True))
 @click.argument('dst', nargs=1, type=click.Path())
-def cp(src, dst):
+def cp(src, dst: str) -> None:
     status = 0
 
     for (repo, path) in gather_repositories():

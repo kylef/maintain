@@ -35,8 +35,8 @@ class CReleaser(Releaser):
         headers = self.version_headers()
 
         if len(headers) > 1:
-            raise Exception('Found multiple version headers ({}), only one' +
-                            'is permitted.'.format(', '.join(headers)))
+            raise Exception(('Found multiple version headers ({}), only one' +
+                            'is permitted.').format(', '.join(headers)))
 
         self.header = headers[0]
 
@@ -52,8 +52,8 @@ class CReleaser(Releaser):
                                         patch.groups()[-1])
             return Version(version)
         else:
-            raise Exception('Invalid version header ({}), doesn\'t contain ' +
-                            'MAJOR, MINOR and PATCH versions.'.format(self.header))
+            raise Exception(('Invalid version header ({}), doesn\'t contain ' +
+                            'MAJOR, MINOR and PATCH versions.').format(self.header))
 
     def bump(self, new_version):
         version = Version(new_version)

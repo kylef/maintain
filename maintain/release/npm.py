@@ -1,11 +1,11 @@
-import os
-import json
 import collections
+import json
+import os
 
 from semantic_version import Version
 
-from maintain.release.base import Releaser
 from maintain.process import invoke
+from maintain.release.base import Releaser
 
 
 class NPMReleaser(Releaser):

@@ -1,38 +1,40 @@
 import re
 from collections import namedtuple
+from typing import List, Optional
 
 import commonmark
 
 
 class Changelog(object):
-    def __init__(self, name, releases=None):
+    def __init__(self, name: str, releases=None) -> None:
         self.name = name
         self.releases = releases or []
 
 
+class Section(object):
+    def __init__(self, name: str) -> None:
+        self.name = name
+
+
 class Release(object):
-    def __init__(self, name, release_date=None, sections=None):
+    def __init__(self, name: str, release_date=None, sections=None) -> None:
         self.name = name
         self.release_date = release_date
         self.sections = sections or []
 
-    def find_section(self, name):
+    def find_section(self, name: str) -> Optional[Section]:
         for section in self.sections:
             if section.name.lower() == name.lower():
                 return section
+        return None
 
 
-class Section(object):
-    def __init__(self, name):
-        self.name = name
+Heading = namedtuple('Heading', ['level', 'title'])
 
-
-def ast_to_headings(node):
+def ast_to_headings(node) -> List[Heading]:
     """
     Walks AST and returns a list of headings
     """
-
-    Heading = namedtuple('Heading', ['level', 'title'])
 
     level = None
     walker = node.walker()
@@ -59,7 +61,7 @@ def ast_to_headings(node):
     return headings
 
 
-def ast_to_changelog(node):
+def ast_to_changelog(node) -> Changelog:
     changelog = None
     headings = ast_to_headings(node)
 
@@ -101,14 +103,14 @@ def ast_to_changelog(node):
     return changelog
 
 
-def parse_changelog(path):
+def parse_changelog(path: str) -> Changelog:
     with open(path, 'r') as fp:
         parser = commonmark.Parser()
         ast = parser.parse(fp.read())
         return ast_to_changelog(ast)
 
 
-def extract_last_changelog(path):
+def extract_last_changelog(path: str) -> Optional[str]:
     with open(path, 'r') as fp:
         parser = commonmark.Parser()
         content = fp.read()
@@ -137,3 +139,5 @@ def extract_last_changelog(path):
         pattern = r'\#\# {}(.*\n)([\n\S\s]*)'.format(re.escape(current.name))
         result = re.search(pattern, content, re.MULTILINE)
         return result.group(2).strip()
+
+    return None

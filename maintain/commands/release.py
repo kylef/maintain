@@ -1,15 +1,14 @@
+import logging
 import os
 import sys
-import logging
 
 import click
-from click.exceptions import MissingParameter, ClickException
+from click.exceptions import ClickException, MissingParameter
 from semantic_version import Version
 
 from maintain.release.aggregate import AggregateReleaser
 from maintain.release.git_releaser import GitReleaser
 from maintain.release.github import GitHubReleaser
-
 
 logger = logging.getLogger('maintain.release')
 
@@ -21,7 +20,7 @@ logger = logging.getLogger('maintain.release')
 @click.option('--pull-request/--no-pull-request', default=False)
 @click.option('--verbose/--no-verbose', default=False)
 @click.pass_obj
-def release(config, version, dry_run, bump, pull_request, verbose):
+def release(config, version, dry_run: bool, bump: bool, pull_request: bool, verbose: bool) -> None:
     formatter = logging.Formatter('[%(levelname)s] %(message)s')
     handler = logging.StreamHandler(stream=sys.stdout)
     handler.setFormatter(formatter)
@@ -109,7 +108,7 @@ def release(config, version, dry_run, bump, pull_request, verbose):
         releaser.release(version)
 
 
-def bump_version(version, bump):
+def bump_version(version: Version, bump: str) -> Version:
     if version.prerelease or version.build:
         raise ClickException('Current version {} contains prerelease or build. Bumping is not supported.'.format(version))
 

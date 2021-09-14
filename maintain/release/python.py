@@ -3,8 +3,8 @@ import re
 
 from semantic_version import Version
 
-from maintain.release.base import Releaser
 from maintain.process import invoke
+from maintain.release.base import Releaser
 
 
 class PythonReleaser(Releaser):
@@ -13,10 +13,10 @@ class PythonReleaser(Releaser):
     VERSION_SUB_REGEX = re.compile(r'(version\s*=\s*["\']).*(["\'])')
 
     @classmethod
-    def detect(cls):
+    def detect(cls) -> bool:
         return os.path.exists('setup.py')
 
-    def determine_current_version(self):
+    def determine_current_version(self) -> Version:
         with open('setup.py') as fp:
             match = self.VERSION_REGEX.search(fp.read())
             if match:
@@ -24,7 +24,7 @@ class PythonReleaser(Releaser):
             else:
                 raise Exception('Invalid setup.py, doesn\'t contain a version.')
 
-    def bump(self, new_version):
+    def bump(self, new_version: Version) -> None:
         with open('setup.py', 'r') as fp:
             def replace(matcher):
                 return '{}{}{}'.format(matcher.group(1), new_version,
@@ -35,7 +35,7 @@ class PythonReleaser(Releaser):
         with open('setup.py', 'w') as fp:
             fp.write(content)
 
-    def release(self, new_version):
+    def release(self, new_version: Version) -> None:
         version = self.determine_current_version()
         invoke(['python', 'setup.py', 'sdist', 'bdist_wheel'])
         invoke(['twine', 'upload', 'dist/*{}*'.format(version)])

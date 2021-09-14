@@ -1,11 +1,12 @@
 import os
+import shutil
 import subprocess
 import tempfile
-import shutil
+
 import click
 
 
-def invoke(command, error_message=None):
+def invoke(command, error_message=None) -> None:
     status = subprocess.call(command)
 
     if status != 0:
@@ -17,10 +18,10 @@ def invoke(command, error_message=None):
 
 
 class chdir(object):
-    def __init__(self, directory):
+    def __init__(self, directory: str):
         self.directory = directory
 
-    def __enter__(self):
+    def __enter__(self) -> str:
         self.working_directory = os.getcwd()
         os.chdir(self.directory)
         return self.directory

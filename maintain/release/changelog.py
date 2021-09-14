@@ -1,11 +1,12 @@
 import os
 import re
 from datetime import date
+from typing import Optional
 
 from semantic_version import Version
 
+from maintain.changelog import Changelog, parse_changelog
 from maintain.release.base import Releaser
-from maintain.changelog import parse_changelog
 
 
 class ChangelogReleaser(Releaser):
@@ -17,7 +18,7 @@ class ChangelogReleaser(Releaser):
     PATCH = 'patch'
 
     @classmethod
-    def detect(cls):
+    def detect(cls) -> bool:
         return os.path.exists(cls.path)
 
     @classmethod
@@ -37,7 +38,7 @@ class ChangelogReleaser(Releaser):
             'additionalProperties': False,
         }
 
-    def __init__(self, config=None):
+    def __init__(self, config=None) -> None:
         self.sections = {
             'breaking': 'major',
             'enhancements': 'minor',
@@ -55,7 +56,7 @@ class ChangelogReleaser(Releaser):
         changelog = parse_changelog(self.path)
         self.validate_changelog(changelog)
 
-    def validate_changelog(self, changelog):
+    def validate_changelog(self, changelog: Changelog) -> None:
         for release in changelog.releases:
             found = []
 
@@ -68,7 +69,7 @@ class ChangelogReleaser(Releaser):
 
                 found.append(section.name.lower())
 
-    def determine_current_version(self):
+    def determine_current_version(self) -> Optional[Version]:
         changelog = parse_changelog(self.path)
         for release in changelog.releases:
             if release.name == 'Master':
@@ -76,8 +77,11 @@ class ChangelogReleaser(Releaser):
 
             return Version(release.name)
 
-    def determine_next_version(self):
+        return None
+
+    def determine_next_version(self) -> Optional[Version]:
         current_version = self.determine_current_version()
+        assert current_version
         if current_version.prerelease or current_version.build:
             return None
 
@@ -114,7 +118,7 @@ class ChangelogReleaser(Releaser):
 
         return None
 
-    def bump(self, new_version):
+    def bump(self, new_version: Version) -> None:
         changelog = parse_changelog(self.path)
 
         if len(changelog.releases) > 0:
@@ -133,5 +137,5 @@ class ChangelogReleaser(Releaser):
         else:
             raise Exception('Changelog is missing a master release.')
 
-    def release(self, new_version):
+    def release(self, new_version: Version) -> None:
         pass

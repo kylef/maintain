@@ -1,16 +1,15 @@
 import logging
 
 from maintain.release.base import Releaser
-from maintain.release.hooks import HookReleaser
-from maintain.release.version_file import VersionFileReleaser
-from maintain.release.python import PythonReleaser
-from maintain.release.cocoapods import CocoaPodsReleaser
-from maintain.release.npm import NPMReleaser
 from maintain.release.c import CReleaser
 from maintain.release.changelog import ChangelogReleaser
+from maintain.release.cocoapods import CocoaPodsReleaser
 from maintain.release.git_releaser import GitReleaser
 from maintain.release.github import GitHubReleaser
-
+from maintain.release.hooks import HookReleaser
+from maintain.release.npm import NPMReleaser
+from maintain.release.python import PythonReleaser
+from maintain.release.version_file import VersionFileReleaser
 
 logger = logging.getLogger(__name__)
 
