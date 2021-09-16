@@ -1,5 +1,11 @@
 # Maintain Changelog
 
+## TBD
+
+### Breaking
+
+- Drop support for Python < 3.6.
+
 ## 0.3.0 (2018-09-11)
 
 ### Breaking

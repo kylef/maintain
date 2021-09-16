@@ -18,10 +18,6 @@ workflows:
     jobs:
       - test-python3.7
       - test-python3.6
-      - test-python3.5
-      - test-python3.5
-      - test-python3.4
-      - test-python2.7
 
 jobs:
   test-python3.7:
@@ -33,18 +29,3 @@ jobs:
     <<: *test
     docker:
       - image: circleci/python:3.6
-
-  test-python3.5:
-    <<: *test
-    docker:
-      - image: circleci/python:3.5
-
-  test-python3.4:
-    <<: *test
-    docker:
-      - image: circleci/python:3.4
-
-  test-python2.7:
-    <<: *test
-    docker:
-      - image: circleci/python:2.7

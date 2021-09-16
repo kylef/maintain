@@ -31,7 +31,6 @@ class RepoCommandTestCase(unittest.TestCase):
 
     # run
 
-    @pytest.mark.skipif(sys.version_info < (3, 0), reason='repo run requires Python 3')
     def test_repo_run(self):
         with self.runner.isolated_filesystem():
             Repo.init('repo1')
@@ -46,7 +45,6 @@ class RepoCommandTestCase(unittest.TestCase):
             self.assertTrue(os.path.exists('repo1/test'))
             self.assertTrue(os.path.exists('repo2/test'))
 
-    @pytest.mark.skipif(sys.version_info < (3, 0), reason='repo run requires Python 3')
     def test_repo_run_exit_1(self):
         with self.runner.isolated_filesystem():
             Repo.init('repo1')
@@ -59,7 +57,6 @@ class RepoCommandTestCase(unittest.TestCase):
             self.assertEqual(errors, ['Command failed: repo1', 'Command failed: repo2'])
             self.assertEqual(result.exit_code, 1)
 
-    @pytest.mark.skipif(sys.version_info < (3, 0), reason='repo run requires Python 3')
     def test_repo_run_exit_early(self):
         with self.runner.isolated_filesystem():
             Repo.init('repo1')
@@ -70,7 +67,6 @@ class RepoCommandTestCase(unittest.TestCase):
             self.assertEqual(result.output, 'Command failed: repo1\n')
             self.assertEqual(result.exit_code, 1)
 
-    @pytest.mark.skipif(sys.version_info < (3, 0), reason='repo run requires Python 3')
     def test_repo_run_check(self):
         with self.runner.isolated_filesystem():
             repo = Repo.init('repo1')
@@ -93,7 +89,6 @@ class RepoCommandTestCase(unittest.TestCase):
             self.assertFalse(os.path.exists('repo1/test'))
             self.assertTrue(os.path.exists('repo2/test'))
 
-    @pytest.mark.skipif(sys.version_info < (3, 0), reason='repo run requires Python 3')
     def test_repo_run_check_exit(self):
         with self.runner.isolated_filesystem():
             repo = Repo.init('repo1')
