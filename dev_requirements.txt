@@ -3,7 +3,7 @@
 # Testing
 mock
 pytest
-pytest-pep8
+pytest-black
 pytest-cov
 
 # Documentation
