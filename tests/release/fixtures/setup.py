@@ -3,20 +3,20 @@
 from setuptools import setup
 
 setup(
-    name='changelog',
-    version='0.1.0',
-    url='https://github.com/kylef/changelog',
-    author='Kyle Fuller',
-    author_email='kyle@fuller.li',
+    name="changelog",
+    version="0.1.0",
+    url="https://github.com/kylef/changelog",
+    author="Kyle Fuller",
+    author_email="kyle@fuller.li",
     entry_points={
-        'console_scripts': {
-            'changelog = changelog:cli',
+        "console_scripts": {
+            "changelog = changelog:cli",
         }
     },
     install_requires=[
-        'click',
-        'semver',
-        'commonmark',
+        "click",
+        "semver",
+        "commonmark",
     ],
-    license='BSD',
+    license="BSD",
 )

@@ -11,46 +11,46 @@ logger = logging.getLogger(__name__)
 
 
 class GitReleaser(Releaser):
-    name = 'git'
+    name = "git"
 
     @classmethod
     def detect(cls) -> bool:
-        return os.path.exists('.git')
+        return os.path.exists(".git")
 
     @classmethod
     def schema(cls):
         return {
-            'type': 'object',
-            'properties': {
-                'commit_format': {'type': 'string'},
-                'tag_format': {'type': 'string'},
+            "type": "object",
+            "properties": {
+                "commit_format": {"type": "string"},
+                "tag_format": {"type": "string"},
             },
-            'additionalProperties': False,
+            "additionalProperties": False,
         }
 
     def __init__(self, config=None) -> None:
         self.repo = Repo()
 
-        self.commit_format = (config or {}).get('commit_format', 'Release {version}')
-        self.tag_format = (config or {}).get('tag_format', '{version}')
+        self.commit_format = (config or {}).get("commit_format", "Release {version}")
+        self.tag_format = (config or {}).get("tag_format", "{version}")
 
         if self.repo.head.ref != self.repo.heads.master:
             # TODO: Support releasing from stable/hotfix branches
             raise Exception(
-                'You need to be on the `master` branch in order to do a release.'
+                "You need to be on the `master` branch in order to do a release."
             )
 
         if self.repo.is_dirty():
-            raise Exception('Git repository has unstaged changes.')
+            raise Exception("Git repository has unstaged changes.")
 
         if len(self.repo.untracked_files) > 0:
-            raise Exception('Git repository has untracked files.')
+            raise Exception("Git repository has untracked files.")
 
         if self.has_origin():
             self.repo.remotes.origin.fetch()
 
             if self.repo.remotes.origin.refs.master.commit != self.repo.head.ref.commit:
-                raise Exception('Master has unsynced changes.')
+                raise Exception("Master has unsynced changes.")
 
     def has_origin(self) -> bool:
         try:
@@ -67,21 +67,21 @@ class GitReleaser(Releaser):
         if self.repo.is_dirty():
             message = self.commit_format.format(version=new_version)
 
-            self.repo.git.add('.')
+            self.repo.git.add(".")
             self.repo.index.commit(message)
 
-            logger.info('Created Commit: {}'.format(message))
+            logger.info("Created Commit: {}".format(message))
 
     def release(self, version: Version) -> None:
         tag_name = self.tag_format.format(version=version)
-        tag = self.repo.create_tag(tag_name, message='Release {}'.format(version))
+        tag = self.repo.create_tag(tag_name, message="Release {}".format(version))
 
-        logger.info('Created Tag: {}'.format(tag_name))
+        logger.info("Created Tag: {}".format(tag_name))
 
         if self.has_origin():
-            logger.info('Pushing Tag to Remote')
+            logger.info("Pushing Tag to Remote")
             self.repo.remotes.origin.push(tag)
 
 
 def git_update() -> None:
-    invoke(['git', 'pull', 'origin', 'master'])
+    invoke(["git", "pull", "origin", "master"])

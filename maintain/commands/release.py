@@ -10,20 +10,20 @@ from maintain.release.aggregate import AggregateReleaser
 from maintain.release.git_releaser import GitReleaser
 from maintain.release.github import GitHubReleaser
 
-logger = logging.getLogger('maintain.release')
+logger = logging.getLogger("maintain.release")
 
 
 @click.command()
-@click.argument('version', required=False)
-@click.option('--dry-run/--no-dry-run', default=False)
-@click.option('--bump/--no-bump', default=True)
-@click.option('--pull-request/--no-pull-request', default=False)
-@click.option('--verbose/--no-verbose', default=False)
+@click.argument("version", required=False)
+@click.option("--dry-run/--no-dry-run", default=False)
+@click.option("--bump/--no-bump", default=True)
+@click.option("--pull-request/--no-pull-request", default=False)
+@click.option("--verbose/--no-verbose", default=False)
 @click.pass_obj
 def release(
     config, version, dry_run: bool, bump: bool, pull_request: bool, verbose: bool
 ) -> None:
-    formatter = logging.Formatter('[%(levelname)s] %(message)s')
+    formatter = logging.Formatter("[%(levelname)s] %(message)s")
     handler = logging.StreamHandler(stream=sys.stdout)
     handler.setFormatter(formatter)
     logger.addHandler(handler)
@@ -61,19 +61,19 @@ def release(
             github_releaser = None
 
     if pull_request and not github_releaser:
-        raise Exception('Used --pull-request and no GitHub remote')
+        raise Exception("Used --pull-request and no GitHub remote")
 
     if not version:
         if bump:
-            raise MissingParameter(param_hint='version', param_type='argument')
+            raise MissingParameter(param_hint="version", param_type="argument")
 
         version = releaser.determine_current_version()
 
-    if version == 'semver':
+    if version == "semver":
         version = releaser.determine_next_version()
         if not version:
-            raise Exception('Could not determine the next semantic version.')
-    elif version in ('major', 'minor', 'patch'):
+            raise Exception("Could not determine the next semantic version.")
+    elif version in ("major", "minor", "patch"):
         if bump:
             version = bump_version(releaser.determine_current_version(), version)
         else:
@@ -82,25 +82,25 @@ def release(
         try:
             version = Version(version)
         except ValueError:
-            raise click.BadParameter('{} is not a semantic version'.format(version))
+            raise click.BadParameter("{} is not a semantic version".format(version))
 
     if not bump:
         current_version = releaser.determine_current_version()
         if current_version != version:
             click.echo(
-                '--no-bump was used, however the supplied version '
-                + 'is not equal to current version {} != {}'.format(
+                "--no-bump was used, however the supplied version "
+                + "is not equal to current version {} != {}".format(
                     current_version, version
                 )
             )
             exit(1)
 
     if bump:
-        logger.info('Bumping {}'.format(version))
+        logger.info("Bumping {}".format(version))
 
         ref = git_releaser.repo.refs.master
         if pull_request:
-            branch = 'release-{}'.format(version)
+            branch = "release-{}".format(version)
             ref = git_releaser.repo.create_head(branch, git_releaser.repo.head)
             git_releaser.repo.head.set_reference(ref)
 
@@ -114,16 +114,16 @@ def release(
                 github_releaser.create_pull_request(version)
 
     if not dry_run and not pull_request:
-        logger.info('Releasing {}'.format(version))
+        logger.info("Releasing {}".format(version))
         releaser.release(version)
 
 
 def bump_version(version: Version, bump: str) -> Version:
     if version.prerelease or version.build:
         raise ClickException(
-            'Current version {} contains prerelease or build. Bumping is not supported.'.format(
+            "Current version {} contains prerelease or build. Bumping is not supported.".format(
                 version
             )
         )
 
-    return getattr(version, 'next_{}'.format(bump))()
+    return getattr(version, "next_{}".format(bump))()

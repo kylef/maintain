@@ -12,7 +12,7 @@ class BumpVersionTestCase(unittest.TestCase):
 
     def test_detects_version_file(self):
         with temp_directory():
-            touch('VERSION')
+            touch("VERSION")
             self.assertTrue(VersionFileReleaser.detect())
 
     def test_doesnt_detect_without_version_file(self):
@@ -25,9 +25,9 @@ class BumpVersionTestCase(unittest.TestCase):
         releaser = VersionFileReleaser()
 
         with temp_directory():
-            touch('VERSION', '0.2.6')
+            touch("VERSION", "0.2.6")
             version = releaser.determine_current_version()
-            self.assertEqual(version, Version('0.2.6'))
+            self.assertEqual(version, Version("0.2.6"))
 
     # Bumping
 
@@ -35,8 +35,8 @@ class BumpVersionTestCase(unittest.TestCase):
         releaser = VersionFileReleaser()
 
         with temp_directory():
-            touch('VERSION', '2.2.12')
-            releaser.bump('2.3.0')
+            touch("VERSION", "2.2.12")
+            releaser.bump("2.3.0")
 
-            with open('VERSION') as fp:
-                self.assertEqual(fp.read(), '2.3.0\n')
+            with open("VERSION") as fp:
+                self.assertEqual(fp.read(), "2.3.0\n")

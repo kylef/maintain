@@ -10,12 +10,12 @@ from maintain.release.base import Releaser
 
 
 class ChangelogReleaser(Releaser):
-    name = 'changelog'
-    path = 'CHANGELOG.md'
+    name = "changelog"
+    path = "CHANGELOG.md"
 
-    MAJOR = 'major'
-    MINOR = 'minor'
-    PATCH = 'patch'
+    MAJOR = "major"
+    MINOR = "minor"
+    PATCH = "patch"
 
     @classmethod
     def detect(cls) -> bool:
@@ -24,27 +24,27 @@ class ChangelogReleaser(Releaser):
     @classmethod
     def schema(cls):
         return {
-            'type': 'object',
-            'properties': {
-                'sections': {
-                    'type': 'object',
-                    'patternProperties': {
-                        '': {'enum': [cls.MAJOR, cls.MINOR, cls.PATCH]},
+            "type": "object",
+            "properties": {
+                "sections": {
+                    "type": "object",
+                    "patternProperties": {
+                        "": {"enum": [cls.MAJOR, cls.MINOR, cls.PATCH]},
                     },
                 },
             },
-            'additionalProperties': False,
+            "additionalProperties": False,
         }
 
     def __init__(self, config=None) -> None:
         self.sections = {
-            'breaking': 'major',
-            'enhancements': 'minor',
-            'bug fixes': 'patch',
+            "breaking": "major",
+            "enhancements": "minor",
+            "bug fixes": "patch",
         }
 
         if config:
-            sections = config.get('sections', {})
+            sections = config.get("sections", {})
             if len(sections) > 0:
                 self.sections = {}
 
@@ -61,12 +61,12 @@ class ChangelogReleaser(Releaser):
             for section in release.sections:
                 if section.name.lower() not in self.sections.keys():
                     raise Exception(
-                        'Changelog section {} is not supported.'.format(section.name)
+                        "Changelog section {} is not supported.".format(section.name)
                     )
 
                 if section.name.lower() in found:
                     raise Exception(
-                        'Changelog section {} is duplicated in release {}'.format(
+                        "Changelog section {} is duplicated in release {}".format(
                             section.name, release.name
                         )
                     )
@@ -76,7 +76,7 @@ class ChangelogReleaser(Releaser):
     def determine_current_version(self) -> Optional[Version]:
         changelog = parse_changelog(self.path)
         for release in changelog.releases:
-            if release.name == 'Master':
+            if release.name == "Master":
                 continue
 
             return Version(release.name)
@@ -92,7 +92,7 @@ class ChangelogReleaser(Releaser):
         changelog = parse_changelog(self.path)
 
         for release in changelog.releases:
-            if release.name != 'Master':
+            if release.name != "Master":
                 continue
 
             major = False
@@ -127,23 +127,23 @@ class ChangelogReleaser(Releaser):
 
         if len(changelog.releases) > 0:
             release = changelog.releases[0]
-            if release.name == 'Master':
+            if release.name == "Master":
                 with open(self.path) as fp:
                     content = fp.read()
 
-                heading = '## {} ({})'.format(new_version, date.today().isoformat())
-                content = re.sub(r'^## Master$', heading, content, flags=re.MULTILINE)
+                heading = "## {} ({})".format(new_version, date.today().isoformat())
+                content = re.sub(r"^## Master$", heading, content, flags=re.MULTILINE)
 
-                with open('CHANGELOG.md', 'w') as fp:
+                with open("CHANGELOG.md", "w") as fp:
                     fp.write(content)
             else:
                 raise Exception(
-                    'Last changelog release was `{}` and not `Master`.'.format(
+                    "Last changelog release was `{}` and not `Master`.".format(
                         release.name
                     )
                 )
         else:
-            raise Exception('Changelog is missing a master release.')
+            raise Exception("Changelog is missing a master release.")
 
     def release(self, new_version: Version) -> None:
         pass

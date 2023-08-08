@@ -11,7 +11,7 @@ class Releaser(object):
     """
     The name of the Releaser.
     """
-    name = 'Unknown'
+    name = "Unknown"
 
     @classmethod
     def detect(cls) -> bool:
@@ -26,7 +26,7 @@ class Releaser(object):
         """
         The releasers configuration key.
         """
-        return cls.name.lower().replace(' ', '_')
+        return cls.name.lower().replace(" ", "_")
 
     @classmethod
     def schema(cls):

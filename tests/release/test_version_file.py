@@ -12,27 +12,27 @@ class VersionFileReleaserTestCase(unittest.TestCase):
 
     def test_detect_current_version(self):
         with temp_directory():
-            with open('VERSION', 'w') as fp:
-                fp.write('1.0.0\n')
+            with open("VERSION", "w") as fp:
+                fp.write("1.0.0\n")
 
             version = VersionFileReleaser().determine_current_version()
-            self.assertEqual(version, Version('1.0.0'))
+            self.assertEqual(version, Version("1.0.0"))
 
     # Detection
 
     def test_detects_version_file(self):
         with temp_directory():
-            touch('VERSION')
+            touch("VERSION")
             self.assertTrue(VersionFileReleaser().detect())
 
     # Bumping
 
     def test_bumps_package_json(self):
         with temp_directory():
-            with open('VERSION', 'w') as fp:
-                fp.write('1.0.0\n')
+            with open("VERSION", "w") as fp:
+                fp.write("1.0.0\n")
 
-            VersionFileReleaser().bump('2.0.0')
+            VersionFileReleaser().bump("2.0.0")
 
-            with open('VERSION') as fp:
-                self.assertEqual(fp.read(), '2.0.0\n')
+            with open("VERSION") as fp:
+                self.assertEqual(fp.read(), "2.0.0\n")

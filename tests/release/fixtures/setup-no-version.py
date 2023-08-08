@@ -2,25 +2,25 @@
 
 from setuptools import setup
 
-with open('VERSION') as fp:
+with open("VERSION") as fp:
     VERSION = fp.read().strip()
 
 
 setup(
-    name='changelog',
+    name="changelog",
     version=VERSION,
-    url='https://github.com/kylef/changelog',
-    author='Kyle Fuller',
-    author_email='kyle@fuller.li',
+    url="https://github.com/kylef/changelog",
+    author="Kyle Fuller",
+    author_email="kyle@fuller.li",
     entry_points={
-        'console_scripts': {
-            'changelog = changelog:cli',
+        "console_scripts": {
+            "changelog = changelog:cli",
         }
     },
     install_requires=[
-        'click',
-        'semver',
-        'commonmark',
+        "click",
+        "semver",
+        "commonmark",
     ],
-    license='BSD',
+    license="BSD",
 )

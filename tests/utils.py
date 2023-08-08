@@ -21,7 +21,7 @@ class temp_directory(object):
         shutil.rmtree(self.pathname)
 
 
-def touch(filename, contents=''):
+def touch(filename, contents=""):
     path, _ = os.path.split(filename)
     if len(path) > 0:
         try:
@@ -29,7 +29,7 @@ def touch(filename, contents=''):
         except FileExistsError:
             pass
 
-    with open(filename, 'w') as fp:
+    with open(filename, "w") as fp:
         fp.write(contents)
 
 

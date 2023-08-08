@@ -8,34 +8,34 @@ from maintain.release.base import Releaser
 
 
 class PythonReleaser(Releaser):
-    name = 'Python'
+    name = "Python"
     VERSION_REGEX = re.compile(r'version\s*=\s*["\'](.*)["\']')
     VERSION_SUB_REGEX = re.compile(r'(version\s*=\s*["\']).*(["\'])')
 
     @classmethod
     def detect(cls) -> bool:
-        return os.path.exists('setup.py')
+        return os.path.exists("setup.py")
 
     def determine_current_version(self) -> Version:
-        with open('setup.py') as fp:
+        with open("setup.py") as fp:
             match = self.VERSION_REGEX.search(fp.read())
             if match:
                 return Version(match.groups()[0])
             else:
-                raise Exception('Invalid setup.py, doesn\'t contain a version.')
+                raise Exception("Invalid setup.py, doesn't contain a version.")
 
     def bump(self, new_version: Version) -> None:
-        with open('setup.py', 'r') as fp:
+        with open("setup.py", "r") as fp:
 
             def replace(matcher):
-                return '{}{}{}'.format(matcher.group(1), new_version, matcher.group(2))
+                return "{}{}{}".format(matcher.group(1), new_version, matcher.group(2))
 
             content = self.VERSION_SUB_REGEX.sub(replace, fp.read(), count=1)
 
-        with open('setup.py', 'w') as fp:
+        with open("setup.py", "w") as fp:
             fp.write(content)
 
     def release(self, new_version: Version) -> None:
         version = self.determine_current_version()
-        invoke(['python', 'setup.py', 'sdist', 'bdist_wheel'])
-        invoke(['twine', 'upload', 'dist/*{}*'.format(version)])
+        invoke(["python", "setup.py", "sdist", "bdist_wheel"])
+        invoke(["twine", "upload", "dist/*{}*".format(version)])

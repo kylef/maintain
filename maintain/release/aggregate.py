@@ -50,11 +50,11 @@ class AggregateReleaser(Releaser):
         for releaser_cls in cls.releasers():
             releaser_config = get_config(releaser_cls)
 
-            if releaser_config.get('disabled', False):
+            if releaser_config.get("disabled", False):
                 continue
 
             if releaser_cls.detect():
-                logger.info('Enabled Releaser: {}'.format(releaser_cls.name))
+                logger.info("Enabled Releaser: {}".format(releaser_cls.name))
                 releasers.append(releaser_cls(releaser_config))
 
         return releasers
@@ -83,7 +83,7 @@ class AggregateReleaser(Releaser):
 
             if next_version and version and version != next_version:
                 raise Exception(
-                    'Inconsistent versions, {} is at {} but {} is at {}.'.format(
+                    "Inconsistent versions, {} is at {} but {} is at {}.".format(
                         releaser_name, version, releaser.name, next_version
                     )
                 )
@@ -109,7 +109,7 @@ class AggregateReleaser(Releaser):
 
             if version and version != next_version:
                 raise Exception(
-                    'Inconsistent next versions, {} is at {} but {} is at {}.'.format(
+                    "Inconsistent next versions, {} is at {} but {} is at {}.".format(
                         releaser_name, version, releaser.name, next_version
                     )
                 )

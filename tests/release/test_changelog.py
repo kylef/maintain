@@ -22,109 +22,109 @@ class FakeDate(date):
 class ChangelogReleaserTestCase(unittest.TestCase):
     def test_detects_version_file(self):
         with temp_directory():
-            touch('CHANGELOG.md')
+            touch("CHANGELOG.md")
             self.assertTrue(ChangelogReleaser.detect())
 
     def test_determine_current_version(self):
         fixture_path = os.path.join(
-            os.path.abspath(os.path.dirname(__file__)), 'fixtures'
+            os.path.abspath(os.path.dirname(__file__)), "fixtures"
         )
-        changelog = os.path.join(fixture_path, 'CHANGELOG.md')
+        changelog = os.path.join(fixture_path, "CHANGELOG.md")
 
         with temp_directory():
-            shutil.copyfile(changelog, 'CHANGELOG.md')
+            shutil.copyfile(changelog, "CHANGELOG.md")
             version = ChangelogReleaser().determine_current_version()
-            self.assertEqual(version, Version('1.0.0'))
+            self.assertEqual(version, Version("1.0.0"))
 
     def test_determine_next_version_patch(self):
         fixture_path = os.path.join(
-            os.path.abspath(os.path.dirname(__file__)), 'fixtures'
+            os.path.abspath(os.path.dirname(__file__)), "fixtures"
         )
-        changelog = os.path.join(fixture_path, 'CHANGELOG.md')
+        changelog = os.path.join(fixture_path, "CHANGELOG.md")
 
         with temp_directory():
-            shutil.copyfile(changelog, 'CHANGELOG.md')
+            shutil.copyfile(changelog, "CHANGELOG.md")
             version = ChangelogReleaser().determine_next_version()
-            self.assertEqual(version, Version('1.0.1'))
+            self.assertEqual(version, Version("1.0.1"))
 
     def test_determine_next_version_prerelease(self):
         fixture_path = os.path.join(
-            os.path.abspath(os.path.dirname(__file__)), 'fixtures'
+            os.path.abspath(os.path.dirname(__file__)), "fixtures"
         )
-        changelog = os.path.join(fixture_path, 'CHANGELOG-NEXT-PRERELEASE.md')
+        changelog = os.path.join(fixture_path, "CHANGELOG-NEXT-PRERELEASE.md")
 
         with temp_directory():
-            shutil.copyfile(changelog, 'CHANGELOG.md')
+            shutil.copyfile(changelog, "CHANGELOG.md")
             version = ChangelogReleaser().determine_next_version()
             self.assertIsNone(version)
 
     def test_determine_next_version_minor(self):
         fixture_path = os.path.join(
-            os.path.abspath(os.path.dirname(__file__)), 'fixtures'
+            os.path.abspath(os.path.dirname(__file__)), "fixtures"
         )
-        changelog = os.path.join(fixture_path, 'CHANGELOG-NEXT-MINOR.md')
+        changelog = os.path.join(fixture_path, "CHANGELOG-NEXT-MINOR.md")
 
         with temp_directory():
-            shutil.copyfile(changelog, 'CHANGELOG.md')
+            shutil.copyfile(changelog, "CHANGELOG.md")
             version = ChangelogReleaser().determine_next_version()
-            self.assertEqual(version, Version('1.1.0'))
+            self.assertEqual(version, Version("1.1.0"))
 
     def test_determine_next_version_major(self):
         fixture_path = os.path.join(
-            os.path.abspath(os.path.dirname(__file__)), 'fixtures'
+            os.path.abspath(os.path.dirname(__file__)), "fixtures"
         )
-        changelog = os.path.join(fixture_path, 'CHANGELOG-NEXT-MAJOR.md')
+        changelog = os.path.join(fixture_path, "CHANGELOG-NEXT-MAJOR.md")
 
         with temp_directory():
-            shutil.copyfile(changelog, 'CHANGELOG.md')
+            shutil.copyfile(changelog, "CHANGELOG.md")
             version = ChangelogReleaser().determine_next_version()
-            self.assertEqual(version, Version('2.0.0'))
+            self.assertEqual(version, Version("2.0.0"))
 
     def test_determine_next_version_major_unstable(self):
         fixture_path = os.path.join(
-            os.path.abspath(os.path.dirname(__file__)), 'fixtures'
+            os.path.abspath(os.path.dirname(__file__)), "fixtures"
         )
-        changelog = os.path.join(fixture_path, 'CHANGELOG-NEXT-MAJOR-UNSTABLE.md')
+        changelog = os.path.join(fixture_path, "CHANGELOG-NEXT-MAJOR-UNSTABLE.md")
 
         with temp_directory():
-            shutil.copyfile(changelog, 'CHANGELOG.md')
+            shutil.copyfile(changelog, "CHANGELOG.md")
             version = ChangelogReleaser().determine_next_version()
-            self.assertEqual(version, Version('0.2.0'))
+            self.assertEqual(version, Version("0.2.0"))
 
-    @mock.patch('maintain.release.changelog.date', FakeDate)
+    @mock.patch("maintain.release.changelog.date", FakeDate)
     def test_bumps_master(self):
         from datetime import date
 
         FakeDate.today = classmethod(lambda cls: date(2016, 1, 1))
 
         fixture_path = os.path.join(
-            os.path.abspath(os.path.dirname(__file__)), 'fixtures'
+            os.path.abspath(os.path.dirname(__file__)), "fixtures"
         )
-        changelog = os.path.join(fixture_path, 'CHANGELOG.md')
-        bumped_changelog = os.path.join(fixture_path, 'BUMPED_CHANGELOG.md')
+        changelog = os.path.join(fixture_path, "CHANGELOG.md")
+        bumped_changelog = os.path.join(fixture_path, "BUMPED_CHANGELOG.md")
 
         with temp_directory():
-            shutil.copyfile(changelog, 'CHANGELOG.md')
-            ChangelogReleaser().bump('1.0.1')
-            self.assertTrue(filecmp.cmp('CHANGELOG.md', bumped_changelog))
+            shutil.copyfile(changelog, "CHANGELOG.md")
+            ChangelogReleaser().bump("1.0.1")
+            self.assertTrue(filecmp.cmp("CHANGELOG.md", bumped_changelog))
 
     def test_determine_next_version_major_custom_sections(self):
         with temp_directory():
-            touch('CHANGELOG.md', '# Changelog\n## Master\n### Section\n## 1.0.0\n')
-            changelog = ChangelogReleaser(config={'sections': {'section': 'major'}})
+            touch("CHANGELOG.md", "# Changelog\n## Master\n### Section\n## 1.0.0\n")
+            changelog = ChangelogReleaser(config={"sections": {"section": "major"}})
             version = changelog.determine_next_version()
-            self.assertEqual(version, Version('2.0.0'))
+            self.assertEqual(version, Version("2.0.0"))
 
     def test_determine_next_version_minor_custom_sections(self):
         with temp_directory():
-            touch('CHANGELOG.md', '# Changelog\n## Master\n### Section\n## 1.0.0\n')
-            changelog = ChangelogReleaser(config={'sections': {'section': 'minor'}})
+            touch("CHANGELOG.md", "# Changelog\n## Master\n### Section\n## 1.0.0\n")
+            changelog = ChangelogReleaser(config={"sections": {"section": "minor"}})
             version = changelog.determine_next_version()
-            self.assertEqual(version, Version('1.1.0'))
+            self.assertEqual(version, Version("1.1.0"))
 
     def test_determine_next_version_patch_custom_sections(self):
         with temp_directory():
-            touch('CHANGELOG.md', '# Changelog\n## Master\n### Section\n## 1.0.0\n')
-            changelog = ChangelogReleaser(config={'sections': {'section': 'patch'}})
+            touch("CHANGELOG.md", "# Changelog\n## Master\n### Section\n## 1.0.0\n")
+            changelog = ChangelogReleaser(config={"sections": {"section": "patch"}})
             version = changelog.determine_next_version()
-            self.assertEqual(version, Version('1.0.1'))
+            self.assertEqual(version, Version("1.0.1"))

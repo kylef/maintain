@@ -6,7 +6,7 @@ from maintain.config import Configuration
 
 
 @click.group()
-@click.option('--config', type=click.Path(exists=True))
+@click.option("--config", type=click.Path(exists=True))
 @click.pass_context
 def cli(ctx, config: str) -> None:
     if config:

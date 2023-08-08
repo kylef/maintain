@@ -7,22 +7,22 @@ from maintain.release.base import Releaser
 
 
 class CReleaser(Releaser):
-    name = 'C'
+    name = "C"
 
-    MAJOR_VERSION_REGEX = re.compile(r'\#define ([\w_]*)?VERSION_MAJOR (\d+)')
-    MINOR_VERSION_REGEX = re.compile(r'\#define ([\w_]*)?VERSION_MINOR (\d+)')
-    PATCH_VERSION_REGEX = re.compile(r'\#define ([\w_]*)?VERSION_PATCH (\d+)')
+    MAJOR_VERSION_REGEX = re.compile(r"\#define ([\w_]*)?VERSION_MAJOR (\d+)")
+    MINOR_VERSION_REGEX = re.compile(r"\#define ([\w_]*)?VERSION_MINOR (\d+)")
+    PATCH_VERSION_REGEX = re.compile(r"\#define ([\w_]*)?VERSION_PATCH (\d+)")
 
-    SUB_MAJOR_VERSION_REGEX = re.compile(r'(\#define ([\w_]*)?VERSION_MAJOR )(\d+)')
-    SUB_MINOR_VERSION_REGEX = re.compile(r'(\#define ([\w_]*)?VERSION_MINOR )(\d+)')
-    SUB_PATCH_VERSION_REGEX = re.compile(r'(\#define ([\w_]*)?VERSION_PATCH )(\d+)')
+    SUB_MAJOR_VERSION_REGEX = re.compile(r"(\#define ([\w_]*)?VERSION_MAJOR )(\d+)")
+    SUB_MINOR_VERSION_REGEX = re.compile(r"(\#define ([\w_]*)?VERSION_MINOR )(\d+)")
+    SUB_PATCH_VERSION_REGEX = re.compile(r"(\#define ([\w_]*)?VERSION_PATCH )(\d+)")
 
     @classmethod
     def version_headers(cls):
         """
         Returns all the version headers in the project.
         """
-        return glob('src/[Vv]ersion.h') + glob('include/*/[Vv]ersion.h')
+        return glob("src/[Vv]ersion.h") + glob("include/*/[Vv]ersion.h")
 
     @classmethod
     def detect(cls):
@@ -37,8 +37,8 @@ class CReleaser(Releaser):
         if len(headers) > 1:
             raise Exception(
                 (
-                    'Found multiple version headers ({}), only one' + 'is permitted.'
-                ).format(', '.join(headers))
+                    "Found multiple version headers ({}), only one" + "is permitted."
+                ).format(", ".join(headers))
             )
 
         self.header = headers[0]
@@ -51,15 +51,15 @@ class CReleaser(Releaser):
         minor = self.MINOR_VERSION_REGEX.search(contents)
         patch = self.PATCH_VERSION_REGEX.search(contents)
         if major and minor and patch:
-            version = '{}.{}.{}'.format(
+            version = "{}.{}.{}".format(
                 major.groups()[-1], minor.groups()[-1], patch.groups()[-1]
             )
             return Version(version)
         else:
             raise Exception(
                 (
-                    'Invalid version header ({}), doesn\'t contain '
-                    + 'MAJOR, MINOR and PATCH versions.'
+                    "Invalid version header ({}), doesn't contain "
+                    + "MAJOR, MINOR and PATCH versions."
                 ).format(self.header)
             )
 
@@ -67,14 +67,14 @@ class CReleaser(Releaser):
         version = Version(new_version)
 
         if version.prerelease or version.build:
-            raise Exception('Cannot bump prerelease or build in C projects.')
+            raise Exception("Cannot bump prerelease or build in C projects.")
 
         with open(self.header) as fp:
             contents = fp.read()
 
         def replacer(component):
             def wrap(matcher):
-                return '{}{}'.format(matcher.group(1), component)
+                return "{}{}".format(matcher.group(1), component)
 
             return wrap
 
@@ -88,7 +88,7 @@ class CReleaser(Releaser):
             replacer(version.patch), contents, count=1
         )
 
-        with open(self.header, 'w') as fp:
+        with open(self.header, "w") as fp:
             fp.write(contents)
 
     def release(self, new_version):
