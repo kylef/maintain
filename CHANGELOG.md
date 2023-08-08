@@ -4,7 +4,7 @@
 
 ### Breaking
 
-- Drop support for Python < 3.6.
+- Drop support for Python < 3.7.
 
 ## 0.3.0 (2018-09-11)
 
