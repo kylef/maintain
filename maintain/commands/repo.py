@@ -33,21 +33,27 @@ def check_repo(name: str, path: str) -> bool:
     repo = Repo(path)
     failures = []
 
-    if "master" not in repo.heads:
-        failures.append("Repository does not have a master branch")
+    default_branches = [branch for branch in ["master", "main"] if branch in repo.heads]
+    if len(default_branches) == 1:
+        branch = default_branches[0]
+        if repo.head.ref != repo.heads[branch]:
+            failures.append(f"Current branch is not default branch ({branch})")
+
+        if "origin" in repo.remotes:
+            if repo.remotes.origin.refs[branch].commit != repo.head.ref.commit:
+                failures.append("Branch has unsynced changes")
+
+    elif len(default_branches) == 0:
+        failures.append("Could not find a default branch")
     else:
-        if repo.head.ref != repo.heads.master:
-            failures.append("Branch is not master")
+        branches = ", ".join(default_branches)
+        failures.append(f"Found multiple default branches, ambgious: {branches}")
 
     if repo.is_dirty():
         failures.append("Repository has unstaged changes")
 
     if len(repo.untracked_files) > 0:
         failures.append("Repository has untracked files")
-
-    if "origin" in repo.remotes:
-        if repo.remotes.origin.refs.master.commit != repo.head.ref.commit:
-            failures.append("Branch has unsynced changes")
 
     if len(failures) > 0:
         click.echo(name)

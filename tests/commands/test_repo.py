@@ -133,14 +133,14 @@ class RepoCommandTestCase(unittest.TestCase):
             self.assertEqual(result.output, "")
             self.assertEqual(result.exit_code, 0)
 
-    def test_repo_check_missing_master(self):
+    def test_repo_check_missing_default_branch(self):
         with self.runner.isolated_filesystem():
             Repo.init("repo")
 
             result = self.runner.invoke(cli, ["repo", "check"])
 
             self.assertEqual(
-                result.output, "repo\n - Repository does not have a master branch\n"
+                result.output, "repo\n - Could not find a default branch\n"
             )
             self.assertEqual(result.exit_code, 1)
 
@@ -174,7 +174,7 @@ class RepoCommandTestCase(unittest.TestCase):
             )
             self.assertEqual(result.exit_code, 1)
 
-    def test_repo_check_not_master(self):
+    def test_repo_check_not_default_branch(self):
         with self.runner.isolated_filesystem():
             repo = Repo.init("repo")
             touch("repo/README.md")
@@ -184,7 +184,26 @@ class RepoCommandTestCase(unittest.TestCase):
 
             result = self.runner.invoke(cli, ["repo", "check"])
 
-            self.assertEqual(result.output, "repo\n - Branch is not master\n")
+            self.assertEqual(
+                result.output,
+                "repo\n - Current branch is not default branch (master)\n",
+            )
+            self.assertEqual(result.exit_code, 1)
+
+    def test_repo_check_multiple_default_branch(self):
+        with self.runner.isolated_filesystem():
+            repo = Repo.init("repo")
+            touch("repo/README.md")
+            repo.index.add(["README.md"])
+            repo.index.commit("Initial commit")
+            repo.git.checkout("HEAD", b="main")
+
+            result = self.runner.invoke(cli, ["repo", "check"])
+
+            self.assertEqual(
+                result.output,
+                "repo\n - Found multiple default branches, ambgious: master, main\n",
+            )
             self.assertEqual(result.exit_code, 1)
 
     # cp
