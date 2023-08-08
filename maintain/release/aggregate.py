@@ -82,8 +82,11 @@ class AggregateReleaser(Releaser):
                 continue
 
             if next_version and version and version != next_version:
-                raise Exception('Inconsistent versions, {} is at {} but {} is at {}.'.format(
-                                releaser_name, version, releaser.name, next_version))
+                raise Exception(
+                    'Inconsistent versions, {} is at {} but {} is at {}.'.format(
+                        releaser_name, version, releaser.name, next_version
+                    )
+                )
 
             version = next_version
             releaser_name = releaser.name
@@ -105,8 +108,11 @@ class AggregateReleaser(Releaser):
                 continue
 
             if version and version != next_version:
-                raise Exception('Inconsistent next versions, {} is at {} but {} is at {}.'.format(
-                                releaser_name, version, releaser.name, next_version))
+                raise Exception(
+                    'Inconsistent next versions, {} is at {} but {} is at {}.'.format(
+                        releaser_name, version, releaser.name, next_version
+                    )
+                )
 
             version = next_version
             releaser_name = releaser.name

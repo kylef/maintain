@@ -1,11 +1,12 @@
-import unittest
+import filecmp
 import os
 import shutil
-import filecmp
+import unittest
 
 from semantic_version import Version
 
 from maintain.release.cocoapods import CocoaPodsReleaser
+
 from ..utils import temp_directory, touch
 
 
@@ -25,7 +26,9 @@ class CocoaPodsReleaserTestCase(unittest.TestCase):
     # Check current version
 
     def test_detect_current_version_ruby_podspec(self):
-        fixture_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'fixtures')
+        fixture_path = os.path.join(
+            os.path.abspath(os.path.dirname(__file__)), 'fixtures'
+        )
         podspec = os.path.join(fixture_path, 'JSONWebToken.podspec')
 
         with temp_directory():
@@ -34,7 +37,9 @@ class CocoaPodsReleaserTestCase(unittest.TestCase):
             self.assertEqual(version, Version('1.4.1'))
 
     def test_detect_current_version_json_podspec(self):
-        fixture_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'fixtures')
+        fixture_path = os.path.join(
+            os.path.abspath(os.path.dirname(__file__)), 'fixtures'
+        )
         podspec = os.path.join(fixture_path, 'URITemplate.podspec.json')
 
         with temp_directory():
@@ -65,7 +70,9 @@ class CocoaPodsReleaserTestCase(unittest.TestCase):
     # Bump
 
     def test_bumps_json_podspec(self):
-        fixture_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'fixtures')
+        fixture_path = os.path.join(
+            os.path.abspath(os.path.dirname(__file__)), 'fixtures'
+        )
         podspec = os.path.join(fixture_path, 'URITemplate.podspec.json')
         bumped_podspec = os.path.join(fixture_path, 'BumpedURITemplate.podspec.json')
 
@@ -75,7 +82,9 @@ class CocoaPodsReleaserTestCase(unittest.TestCase):
             self.assertTrue(filecmp.cmp('URITemplate.podspec.json', bumped_podspec))
 
     def test_bumps_ruby_podspec(self):
-        fixture_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'fixtures')
+        fixture_path = os.path.join(
+            os.path.abspath(os.path.dirname(__file__)), 'fixtures'
+        )
         podspec = os.path.join(fixture_path, 'JSONWebToken.podspec')
         bumped_podspec = os.path.join(fixture_path, 'BumpedJSONWebToken.podspec')
 

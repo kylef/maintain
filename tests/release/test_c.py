@@ -1,12 +1,12 @@
-
-import unittest
+import filecmp
 import os
 import shutil
-import filecmp
+import unittest
 
 from semantic_version import Version
 
 from maintain.release.c import CReleaser
+
 from ..utils import temp_directory, touch
 
 
@@ -42,7 +42,9 @@ class CReleaserTestCase(unittest.TestCase):
     # Determine current version
 
     def test_detect_current_simple_version(self):
-        fixture_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'fixtures')
+        fixture_path = os.path.join(
+            os.path.abspath(os.path.dirname(__file__)), 'fixtures'
+        )
         header = os.path.join(fixture_path, 'SimpleVersion.h')
 
         with temp_directory():
@@ -52,7 +54,9 @@ class CReleaserTestCase(unittest.TestCase):
             self.assertEqual(version, Version('1.2.0'))
 
     def test_detect_current_simple_named_version(self):
-        fixture_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'fixtures')
+        fixture_path = os.path.join(
+            os.path.abspath(os.path.dirname(__file__)), 'fixtures'
+        )
         header = os.path.join(fixture_path, 'SimpleNamedVersion.h')
 
         with temp_directory():
@@ -64,7 +68,9 @@ class CReleaserTestCase(unittest.TestCase):
     # Bumping
 
     def test_bumps_version(self):
-        fixture_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'fixtures')
+        fixture_path = os.path.join(
+            os.path.abspath(os.path.dirname(__file__)), 'fixtures'
+        )
         header = os.path.join(fixture_path, 'SimpleVersion.h')
         bumped_header = os.path.join(fixture_path, 'BumpedSimpleVersion.h')
 

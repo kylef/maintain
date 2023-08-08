@@ -1,8 +1,9 @@
-import unittest
 import os
+import unittest
 
 from maintain.release.github import GitHubReleaser
-from ..utils import temp_directory, git_repo, touch
+
+from ..utils import git_repo, temp_directory, touch
 
 
 class GitHubReleaserTestCase(unittest.TestCase):

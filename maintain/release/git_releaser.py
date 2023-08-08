@@ -22,12 +22,8 @@ class GitReleaser(Releaser):
         return {
             'type': 'object',
             'properties': {
-                'commit_format': {
-                    'type': 'string'
-                },
-                'tag_format': {
-                    'type': 'string'
-                },
+                'commit_format': {'type': 'string'},
+                'tag_format': {'type': 'string'},
             },
             'additionalProperties': False,
         }
@@ -40,7 +36,9 @@ class GitReleaser(Releaser):
 
         if self.repo.head.ref != self.repo.heads.master:
             # TODO: Support releasing from stable/hotfix branches
-            raise Exception('You need to be on the `master` branch in order to do a release.')
+            raise Exception(
+                'You need to be on the `master` branch in order to do a release.'
+            )
 
         if self.repo.is_dirty():
             raise Exception('Git repository has unstaged changes.')

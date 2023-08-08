@@ -1,10 +1,9 @@
 import os
+import shutil
 import sys
 import tempfile
-import shutil
 
 from git import Repo
-
 
 if sys.version_info.major == 2:
     FileExistsError = OSError

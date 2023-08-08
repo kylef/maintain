@@ -1,10 +1,11 @@
 import unittest
 
-from semantic_version import Version
 from git import Repo
+from semantic_version import Version
 
 from maintain.release.git_releaser import GitReleaser
-from ..utils import git_bare_repo, git_repo, touch, temp_directory
+
+from ..utils import git_bare_repo, git_repo, temp_directory, touch
 
 
 class GitReleaserTestCase(unittest.TestCase):
@@ -126,9 +127,7 @@ class GitReleaserTestCase(unittest.TestCase):
             repo.index.add(['README.md'])
             repo.index.commit('Initial commit')
 
-            releaser = GitReleaser(config={
-                'commit_format': 'chore: Release {version}'
-            })
+            releaser = GitReleaser(config={'commit_format': 'chore: Release {version}'})
 
             touch('CHANGELOG.md')
             repo.index.add(['CHANGELOG.md'])

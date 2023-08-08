@@ -1,7 +1,6 @@
 import unittest
 
 from maintain.config import Configuration
-
 from tests.utils import temp_directory, touch
 
 
@@ -65,23 +64,27 @@ class ConfigurationTests(unittest.TestCase):
             Configuration.validate({'release': {'test': []}})
 
     def test_validate_valid_releaser(self):
-        Configuration.validate({
-            'release': {
-                'git': {
-                    'commit_format': 'Hello World',
-                    'tag_format': '{version}',
-                }
-            }
-        })
-
-    def test_validate_invalid_releaser(self):
-        with self.assertRaises(Exception):
-            Configuration.validate({
+        Configuration.validate(
+            {
                 'release': {
                     'git': {
                         'commit_format': 'Hello World',
                         'tag_format': '{version}',
-                        'unknown': 'x',
                     }
                 }
-            })
+            }
+        )
+
+    def test_validate_invalid_releaser(self):
+        with self.assertRaises(Exception):
+            Configuration.validate(
+                {
+                    'release': {
+                        'git': {
+                            'commit_format': 'Hello World',
+                            'tag_format': '{version}',
+                            'unknown': 'x',
+                        }
+                    }
+                }
+            )

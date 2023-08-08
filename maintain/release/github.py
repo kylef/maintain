@@ -33,20 +33,15 @@ class GitHubReleaser(Releaser):
     def schema(cls):
         return {
             'type': 'object',
-            'properties': {
-                'artefacts': {
-                    'type': 'array',
-                    'items': {
-                        'type': 'string'
-                    }
-                }
-            },
+            'properties': {'artefacts': {'type': 'array', 'items': {'type': 'string'}}},
             'additionalProperties': False,
         }
 
     def __init__(self, config):
         if not cmd_exists('hub'):
-            raise Exception('GitHub releases require hub. Missing dependency for hub: https://github.com/github/hub. Please install `hub` and try again.')
+            raise Exception(
+                'GitHub releases require hub. Missing dependency for hub: https://github.com/github/hub. Please install `hub` and try again.'
+            )
 
         self.artefacts = config.get('artefacts', [])
 
@@ -94,6 +89,10 @@ class GitHubReleaser(Releaser):
 
 
 def cmd_exists(cmd: str) -> bool:
-    result = subprocess.call('type {}'.format(cmd), shell=True,
-                             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    result = subprocess.call(
+        'type {}'.format(cmd),
+        shell=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
     return result == 0

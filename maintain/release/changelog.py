@@ -29,9 +29,7 @@ class ChangelogReleaser(Releaser):
                 'sections': {
                     'type': 'object',
                     'patternProperties': {
-                        '': {
-                            'enum': [cls.MAJOR, cls.MINOR, cls.PATCH]
-                        },
+                        '': {'enum': [cls.MAJOR, cls.MINOR, cls.PATCH]},
                     },
                 },
             },
@@ -62,10 +60,16 @@ class ChangelogReleaser(Releaser):
 
             for section in release.sections:
                 if section.name.lower() not in self.sections.keys():
-                    raise Exception('Changelog section {} is not supported.'.format(section.name))
+                    raise Exception(
+                        'Changelog section {} is not supported.'.format(section.name)
+                    )
 
                 if section.name.lower() in found:
-                    raise Exception('Changelog section {} is duplicated in release {}'.format(section.name, release.name))
+                    raise Exception(
+                        'Changelog section {} is duplicated in release {}'.format(
+                            section.name, release.name
+                        )
+                    )
 
                 found.append(section.name.lower())
 
@@ -133,7 +137,11 @@ class ChangelogReleaser(Releaser):
                 with open('CHANGELOG.md', 'w') as fp:
                     fp.write(content)
             else:
-                raise Exception('Last changelog release was `{}` and not `Master`.'.format(release.name))
+                raise Exception(
+                    'Last changelog release was `{}` and not `Master`.'.format(
+                        release.name
+                    )
+                )
         else:
             raise Exception('Changelog is missing a master release.')
 

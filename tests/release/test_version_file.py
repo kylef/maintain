@@ -3,6 +3,7 @@ import unittest
 from semantic_version import Version
 
 from maintain.release.version_file import VersionFileReleaser
+
 from ..utils import temp_directory, touch
 
 

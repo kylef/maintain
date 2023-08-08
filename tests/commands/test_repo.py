@@ -1,6 +1,6 @@
-import unittest
 import os
 import sys
+import unittest
 
 import pytest
 from click.testing import CliRunner
@@ -8,7 +8,8 @@ from git import Repo
 
 from maintain.commands import cli
 from maintain.process import chdir
-from ..utils import temp_directory, git_bare_repo, touch
+
+from ..utils import git_bare_repo, temp_directory, touch
 
 
 class RepoCommandTestCase(unittest.TestCase):
@@ -83,7 +84,9 @@ class RepoCommandTestCase(unittest.TestCase):
 
             result = self.runner.invoke(cli, ['repo', 'run', '--check', 'touch test'])
 
-            self.assertEqual(result.output, 'repo1\n - Repository has untracked files\n')
+            self.assertEqual(
+                result.output, 'repo1\n - Repository has untracked files\n'
+            )
             self.assertEqual(result.exit_code, 1)
 
             self.assertFalse(os.path.exists('repo1/test'))
@@ -103,9 +106,13 @@ class RepoCommandTestCase(unittest.TestCase):
 
             touch('repo1/dirty')
 
-            result = self.runner.invoke(cli, ['repo', 'run', '--exit', '--check', 'touch test'])
+            result = self.runner.invoke(
+                cli, ['repo', 'run', '--exit', '--check', 'touch test']
+            )
 
-            self.assertEqual(result.output, 'repo1\n - Repository has untracked files\n')
+            self.assertEqual(
+                result.output, 'repo1\n - Repository has untracked files\n'
+            )
             self.assertEqual(result.exit_code, 1)
 
             self.assertFalse(os.path.exists('repo1/test'))
@@ -132,7 +139,9 @@ class RepoCommandTestCase(unittest.TestCase):
 
             result = self.runner.invoke(cli, ['repo', 'check'])
 
-            self.assertEqual(result.output, 'repo\n - Repository does not have a master branch\n')
+            self.assertEqual(
+                result.output, 'repo\n - Repository does not have a master branch\n'
+            )
             self.assertEqual(result.exit_code, 1)
 
     def test_repo_check_untracked_files(self):
@@ -160,7 +169,9 @@ class RepoCommandTestCase(unittest.TestCase):
 
             result = self.runner.invoke(cli, ['repo', 'check'])
 
-            self.assertEqual(result.output, 'repo\n - Repository has unstaged changes\n')
+            self.assertEqual(
+                result.output, 'repo\n - Repository has unstaged changes\n'
+            )
             self.assertEqual(result.exit_code, 1)
 
     def test_repo_check_not_master(self):

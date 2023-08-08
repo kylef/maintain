@@ -22,15 +22,9 @@ class HookReleaser(Releaser):
         hook = {
             'type': 'object',
             'properties': {
-                'pre': {
-                    'type': 'array',
-                    'items': {'type': 'string'}
-                },
-                'post': {
-                    'type': 'array',
-                    'items': {'type': 'string'}
-                }
-            }
+                'pre': {'type': 'array', 'items': {'type': 'string'}},
+                'post': {'type': 'array', 'items': {'type': 'string'}},
+            },
         }
         return {
             'type': 'object',

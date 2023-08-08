@@ -35,8 +35,11 @@ class CReleaser(Releaser):
         headers = self.version_headers()
 
         if len(headers) > 1:
-            raise Exception(('Found multiple version headers ({}), only one' +
-                            'is permitted.').format(', '.join(headers)))
+            raise Exception(
+                (
+                    'Found multiple version headers ({}), only one' + 'is permitted.'
+                ).format(', '.join(headers))
+            )
 
         self.header = headers[0]
 
@@ -48,12 +51,17 @@ class CReleaser(Releaser):
         minor = self.MINOR_VERSION_REGEX.search(contents)
         patch = self.PATCH_VERSION_REGEX.search(contents)
         if major and minor and patch:
-            version = '{}.{}.{}'.format(major.groups()[-1], minor.groups()[-1],
-                                        patch.groups()[-1])
+            version = '{}.{}.{}'.format(
+                major.groups()[-1], minor.groups()[-1], patch.groups()[-1]
+            )
             return Version(version)
         else:
-            raise Exception(('Invalid version header ({}), doesn\'t contain ' +
-                            'MAJOR, MINOR and PATCH versions.').format(self.header))
+            raise Exception(
+                (
+                    'Invalid version header ({}), doesn\'t contain '
+                    + 'MAJOR, MINOR and PATCH versions.'
+                ).format(self.header)
+            )
 
     def bump(self, new_version):
         version = Version(new_version)
@@ -67,11 +75,18 @@ class CReleaser(Releaser):
         def replacer(component):
             def wrap(matcher):
                 return '{}{}'.format(matcher.group(1), component)
+
             return wrap
 
-        contents = self.SUB_MAJOR_VERSION_REGEX.sub(replacer(version.major), contents, count=1)
-        contents = self.SUB_MINOR_VERSION_REGEX.sub(replacer(version.minor), contents, count=1)
-        contents = self.SUB_PATCH_VERSION_REGEX.sub(replacer(version.patch), contents, count=1)
+        contents = self.SUB_MAJOR_VERSION_REGEX.sub(
+            replacer(version.major), contents, count=1
+        )
+        contents = self.SUB_MINOR_VERSION_REGEX.sub(
+            replacer(version.minor), contents, count=1
+        )
+        contents = self.SUB_PATCH_VERSION_REGEX.sub(
+            replacer(version.patch), contents, count=1
+        )
 
         with open(self.header, 'w') as fp:
             fp.write(contents)

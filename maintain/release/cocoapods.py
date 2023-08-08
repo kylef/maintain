@@ -35,8 +35,11 @@ class CocoaPodsReleaser(Releaser):
         podspecs = self.podspecs()
 
         if len(podspecs) > 1:
-            raise Exception(('Found multiple podspecs ({}), only one is' +
-                            ' permitted.').format(', '.join(podspecs)))
+            raise Exception(
+                ('Found multiple podspecs ({}), only one is' + ' permitted.').format(
+                    ', '.join(podspecs)
+                )
+            )
 
         self.podspec = podspecs[0]
         self.is_json_podspec = self.podspec.endswith('.json')
@@ -57,8 +60,11 @@ class CocoaPodsReleaser(Releaser):
         if match:
             return Version(match.groups()[0])
         else:
-            raise Exception(('Invalid podspec ({}), doesn\'t contain ' +
-                            'a version.').format(self.podspec))
+            raise Exception(
+                ('Invalid podspec ({}), doesn\'t contain ' + 'a version.').format(
+                    self.podspec
+                )
+            )
 
     def bump(self, new_version: Version) -> None:
         if self.is_json_podspec:
@@ -72,8 +78,11 @@ class CocoaPodsReleaser(Releaser):
             spec['version'] = str(new_version)
             source = spec['source']
             if 'tag' not in source:
-                raise Exception(('JSON podspec {} doesn\'t have a git ' +
-                                'tag').format(self.podspec))
+                raise Exception(
+                    ('JSON podspec {} doesn\'t have a git ' + 'tag').format(
+                        self.podspec
+                    )
+                )
 
             source['tag'] = str(new_version)
             spec['source'] = source
@@ -86,9 +95,9 @@ class CocoaPodsReleaser(Releaser):
 
     def bump_ruby_podspec(self, new_version: Version) -> None:
         with open(self.podspec, 'r') as fp:
+
             def replace(matcher):
-                return '{}{}{}'.format(matcher.group(1), new_version,
-                                       matcher.group(2))
+                return '{}{}{}'.format(matcher.group(1), new_version, matcher.group(2))
 
             content = self.RUBY_SUB_VERSION_REGEX.sub(replace, fp.read(), count=1)
 

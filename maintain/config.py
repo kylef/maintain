@@ -11,13 +11,9 @@ SCHEMA = {
         'release': {
             'type': 'object',
             'properties': {},
-            'patternProperties': {
-                '': {
-                    'type': 'object'
-                }
-            }
+            'patternProperties': {'': {'type': 'object'}},
         }
-    }
+    },
 }
 
 
@@ -25,7 +21,9 @@ for releaser in AggregateReleaser.releasers():
     if not releaser.schema():
         continue
 
-    SCHEMA['properties']['release']['properties'][releaser.config_name()] = releaser.schema()
+    SCHEMA['properties']['release']['properties'][
+        releaser.config_name()
+    ] = releaser.schema()
 
 
 class Configuration(object):

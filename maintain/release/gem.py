@@ -24,8 +24,11 @@ class GemReleaser(Releaser):
         gemspecs = self.gemspecs()
 
         if len(gemspecs) > 1:
-            raise Exception(('Found multiple gemspecs ({}), only one is' +
-                            ' permitted.').format(', '.join(gemspecs)))
+            raise Exception(
+                ('Found multiple gemspecs ({}), only one is' + ' permitted.').format(
+                    ', '.join(gemspecs)
+                )
+            )
 
         self.gemspec = gemspecs[0]
 
@@ -39,9 +42,9 @@ class GemReleaser(Releaser):
 
     def bump(self, new_version: Version) -> None:
         with open(self.gemspec, 'r') as fp:
+
             def replace(matcher):
-                return '{}{}{}'.format(matcher.group(1), new_version,
-                                       matcher.group(2))
+                return '{}{}{}'.format(matcher.group(1), new_version, matcher.group(2))
 
             content = self.VERSION_SUB_REGEX.sub(replace, fp.read(), count=1)
 
@@ -51,8 +54,10 @@ class GemReleaser(Releaser):
     def release(self, new_version: Version) -> None:
         gems = glob('*.gem')
         if len(gems) != 0:
-            raise Exception('Cannot release, found multiple unexpected ' +
-                            'gems ({})'.format(', '.join(gems)))
+            raise Exception(
+                'Cannot release, found multiple unexpected '
+                + 'gems ({})'.format(', '.join(gems))
+            )
 
         invoke(['gem', 'build', self.gemspec])
         invoke(['gem', 'push', glob('*.gem')[0]])

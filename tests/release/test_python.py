@@ -1,11 +1,12 @@
-import unittest
+import filecmp
 import os
 import shutil
-import filecmp
+import unittest
 
 from semantic_version import Version
 
 from maintain.release.python import PythonReleaser
+
 from ..utils import temp_directory, touch
 
 
@@ -13,7 +14,9 @@ class PythonReleaserTestCase(unittest.TestCase):
     # Determine current version
 
     def test_detect_current_version(self):
-        fixture_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'fixtures')
+        fixture_path = os.path.join(
+            os.path.abspath(os.path.dirname(__file__)), 'fixtures'
+        )
         package = os.path.join(fixture_path, 'setup.py')
 
         with temp_directory():
@@ -22,7 +25,9 @@ class PythonReleaserTestCase(unittest.TestCase):
             self.assertEqual(version, Version('0.1.0'))
 
     def test_detect_current_version_no_version(self):
-        fixture_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'fixtures')
+        fixture_path = os.path.join(
+            os.path.abspath(os.path.dirname(__file__)), 'fixtures'
+        )
         package = os.path.join(fixture_path, 'setup-no-version.py')
 
         with temp_directory():
@@ -42,7 +47,9 @@ class PythonReleaserTestCase(unittest.TestCase):
     # Bumping
 
     def test_bumps_package_json(self):
-        fixture_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'fixtures')
+        fixture_path = os.path.join(
+            os.path.abspath(os.path.dirname(__file__)), 'fixtures'
+        )
         package = os.path.join(fixture_path, 'setup.py')
         bumped_package = os.path.join(fixture_path, 'bumped-setup.py')
 

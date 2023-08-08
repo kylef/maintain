@@ -1,11 +1,12 @@
-import unittest
+import filecmp
 import os
 import shutil
-import filecmp
+import unittest
 
 from semantic_version import Version
 
 from maintain.release.npm import NPMReleaser
+
 from ..utils import temp_directory, touch
 
 
@@ -13,7 +14,9 @@ class NPMReleaserTestCase(unittest.TestCase):
     # Determine current version
 
     def test_detect_current_version(self):
-        fixture_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'fixtures')
+        fixture_path = os.path.join(
+            os.path.abspath(os.path.dirname(__file__)), 'fixtures'
+        )
         package = os.path.join(fixture_path, 'package.json')
 
         with temp_directory():
@@ -31,7 +34,9 @@ class NPMReleaserTestCase(unittest.TestCase):
     # Bumping
 
     def test_bumps_package_json(self):
-        fixture_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'fixtures')
+        fixture_path = os.path.join(
+            os.path.abspath(os.path.dirname(__file__)), 'fixtures'
+        )
         package = os.path.join(fixture_path, 'package.json')
         bumped_package = os.path.join(fixture_path, 'bumped-package.json')
 

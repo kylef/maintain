@@ -15,7 +15,7 @@ def gather_repositories():
     searches for them in the current working directory.
     """
 
-    for (root, dirs, files) in os.walk('.', topdown=True):
+    for root, dirs, files in os.walk('.', topdown=True):
         dirs.sort()
 
         if '.git' not in dirs:
@@ -69,7 +69,7 @@ def print_command() -> None:
     Prints all repos.
     """
 
-    for (repo, path) in gather_repositories():
+    for repo, path in gather_repositories():
         click.echo(repo)
 
 
@@ -87,7 +87,7 @@ def run(command, exit: bool, silent: bool, check: bool):
 
     status = 0
 
-    for (repo, path) in gather_repositories():
+    for repo, path in gather_repositories():
         if check and not check_repo(repo, path):
             status = 1
 
@@ -114,7 +114,7 @@ def run(command, exit: bool, silent: bool, check: bool):
 def check_command(exit: bool) -> None:
     status = 0
 
-    for (name, path) in gather_repositories():
+    for name, path in gather_repositories():
         if not check_repo(name, path):
             status = 1
 
@@ -130,7 +130,7 @@ def check_command(exit: bool) -> None:
 def cp(src, dst: str) -> None:
     status = 0
 
-    for (repo, path) in gather_repositories():
+    for repo, path in gather_repositories():
         for filename in src:
             destination = os.path.join(path, dst)
 

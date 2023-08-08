@@ -26,9 +26,9 @@ class PythonReleaser(Releaser):
 
     def bump(self, new_version: Version) -> None:
         with open('setup.py', 'r') as fp:
+
             def replace(matcher):
-                return '{}{}{}'.format(matcher.group(1), new_version,
-                                       matcher.group(2))
+                return '{}{}{}'.format(matcher.group(1), new_version, matcher.group(2))
 
             content = self.VERSION_SUB_REGEX.sub(replace, fp.read(), count=1)
 

@@ -31,6 +31,7 @@ class Release(object):
 
 Heading = namedtuple('Heading', ['level', 'title'])
 
+
 def ast_to_headings(node) -> List[Heading]:
     """
     Walks AST and returns a list of headings
@@ -52,7 +53,11 @@ def ast_to_headings(node) -> List[Heading]:
                 level = None
         elif level:
             if node.t != 'text':
-                raise Exception('Unexpected node {}, only text may be within a heading.'.format(node.t))
+                raise Exception(
+                    'Unexpected node {}, only text may be within a heading.'.format(
+                        node.t
+                    )
+                )
 
             headings.append(Heading(level=level, title=node.literal))
 
@@ -69,7 +74,9 @@ def ast_to_changelog(node) -> Changelog:
         changelog = Changelog(headings[0].title)
         headings = headings[1:]
     else:
-        raise Exception('Changelog does not start with a level 1 heading, including the changelog name.')
+        raise Exception(
+            'Changelog does not start with a level 1 heading, including the changelog name.'
+        )
 
     if any(map(lambda h: h.level == 1, headings)):
         raise Exception('Changelog has multiple level 1 headings.')
@@ -89,12 +96,18 @@ def ast_to_changelog(node) -> Changelog:
                 release = Release(heading.title)
         elif heading.level == 3:
             if not release:
-                raise Exception('Level 3 heading was not found within a release (level 2 heading).')
+                raise Exception(
+                    'Level 3 heading was not found within a release (level 2 heading).'
+                )
 
             release.sections.append(Section(heading.title))
 
         if heading.level > last_heading_level + 1:
-            raise Exception('Changelog heading level jumps from level {} to level {}. Must jump one level per heading.'.format(last_heading_level, heading.level))
+            raise Exception(
+                'Changelog heading level jumps from level {} to level {}. Must jump one level per heading.'.format(
+                    last_heading_level, heading.level
+                )
+            )
         last_heading_level = heading.level
 
     if release:
@@ -127,7 +140,9 @@ def extract_last_changelog(path: str) -> Optional[str]:
         with open(path, 'r') as fp:
             content = fp.read()
 
-        pattern = r'\#\# {}(.*\n)([\n\S\s]*)\#\# {}'.format(re.escape(current.name), re.escape(previous.name))
+        pattern = r'\#\# {}(.*\n)([\n\S\s]*)\#\# {}'.format(
+            re.escape(current.name), re.escape(previous.name)
+        )
         result = re.search(pattern, content, re.MULTILINE)
         return result.group(2).strip()
     elif len(changelog.releases) == 1:

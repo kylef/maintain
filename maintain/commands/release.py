@@ -20,7 +20,9 @@ logger = logging.getLogger('maintain.release')
 @click.option('--pull-request/--no-pull-request', default=False)
 @click.option('--verbose/--no-verbose', default=False)
 @click.pass_obj
-def release(config, version, dry_run: bool, bump: bool, pull_request: bool, verbose: bool) -> None:
+def release(
+    config, version, dry_run: bool, bump: bool, pull_request: bool, verbose: bool
+) -> None:
     formatter = logging.Formatter('[%(levelname)s] %(message)s')
     handler = logging.StreamHandler(stream=sys.stdout)
     handler.setFormatter(formatter)
@@ -31,8 +33,12 @@ def release(config, version, dry_run: bool, bump: bool, pull_request: bool, verb
 
     releaser = AggregateReleaser(config.release)
 
-    git_releasers = filter(lambda releaser: isinstance(releaser, GitReleaser), releaser.releasers)
-    github_releasers = filter(lambda releaser: isinstance(releaser, GitHubReleaser), releaser.releasers)
+    git_releasers = filter(
+        lambda releaser: isinstance(releaser, GitReleaser), releaser.releasers
+    )
+    github_releasers = filter(
+        lambda releaser: isinstance(releaser, GitHubReleaser), releaser.releasers
+    )
 
     try:
         git_releaser = next(git_releasers)
@@ -81,8 +87,12 @@ def release(config, version, dry_run: bool, bump: bool, pull_request: bool, verb
     if not bump:
         current_version = releaser.determine_current_version()
         if current_version != version:
-            click.echo('--no-bump was used, however the supplied version ' +
-                       'is not equal to current version {} != {}'.format(current_version, version))
+            click.echo(
+                '--no-bump was used, however the supplied version '
+                + 'is not equal to current version {} != {}'.format(
+                    current_version, version
+                )
+            )
             exit(1)
 
     if bump:
@@ -110,6 +120,10 @@ def release(config, version, dry_run: bool, bump: bool, pull_request: bool, verb
 
 def bump_version(version: Version, bump: str) -> Version:
     if version.prerelease or version.build:
-        raise ClickException('Current version {} contains prerelease or build. Bumping is not supported.'.format(version))
+        raise ClickException(
+            'Current version {} contains prerelease or build. Bumping is not supported.'.format(
+                version
+            )
+        )
 
     return getattr(version, 'next_{}'.format(bump))()
