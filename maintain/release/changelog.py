@@ -76,7 +76,7 @@ class ChangelogReleaser(Releaser):
     def determine_current_version(self) -> Optional[Version]:
         changelog = parse_changelog(self.path)
         for release in changelog.releases:
-            if release.name == "Master":
+            if release.name == "TBD":
                 continue
 
             return Version(release.name)
@@ -92,7 +92,7 @@ class ChangelogReleaser(Releaser):
         changelog = parse_changelog(self.path)
 
         for release in changelog.releases:
-            if release.name != "Master":
+            if release.name != "TBD":
                 continue
 
             major = False
@@ -127,18 +127,18 @@ class ChangelogReleaser(Releaser):
 
         if len(changelog.releases) > 0:
             release = changelog.releases[0]
-            if release.name == "Master":
+            if release.name == "TBD":
                 with open(self.path) as fp:
                     content = fp.read()
 
                 heading = "## {} ({})".format(new_version, date.today().isoformat())
-                content = re.sub(r"^## Master$", heading, content, flags=re.MULTILINE)
+                content = re.sub(r"^## TBD$", heading, content, flags=re.MULTILINE)
 
                 with open("CHANGELOG.md", "w") as fp:
                     fp.write(content)
             else:
                 raise Exception(
-                    "Last changelog release was `{}` and not `Master`.".format(
+                    "Last changelog release was `{}` and not `TBD`.".format(
                         release.name
                     )
                 )

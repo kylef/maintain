@@ -1,10 +1,14 @@
 # Maintain Changelog
 
-## 0.4.0 (2024-12-21)
+## TBD
 
 ### Breaking
 
 - Drop support for Python < 3.7.
+
+- Changelog releaser now uses the unreleased name "TBD" instead of "Master".
+  `CHANGELOG.md` files must use "TBD" as the upcoming release name going
+  forward.
 
 ### Enhancements
 

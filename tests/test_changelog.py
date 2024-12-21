@@ -16,7 +16,7 @@ class ChangelogTestCase(unittest.TestCase):
 
         self.assertEqual(changelog.name, "swiftenv Changelog")
         self.assertEqual(len(changelog.releases), 2)
-        self.assertEqual(changelog.releases[0].name, "Master")
+        self.assertEqual(changelog.releases[0].name, "TBD")
         self.assertEqual(changelog.releases[1].name, "1.0.0")
 
     def test_retrieves_last_changelog(self):

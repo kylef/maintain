@@ -23,11 +23,11 @@ Detects a `CHANGELOG.md` file in the root of your library.
 
 ## Bump
 
-Finds a "Master" release in your CHANGELOG and changes it to the current
+Finds a "TBD" release in your CHANGELOG and changes it to the current
 version with the current date.
 
 ```markdown
-## Master
+## TBD
 
 ### Bug Fixes
 
