@@ -19,7 +19,7 @@ setup(
         "click",
         "semantic_version",
         "pyyaml",
-        "commonmark==0.9.1",
+        "commonmark",
         "gitpython",
         "jsonschema",
     ],
