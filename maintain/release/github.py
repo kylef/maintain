@@ -51,7 +51,7 @@ class GitHubReleaser(Releaser):
     def bump(self, new_version: Version) -> None:
         pass
 
-    def release(self, new_version: Version) -> None:
+    def release_command(self, new_version: Version):
         command = ["hub", "release", "create"]
 
         if new_version.prerelease:
@@ -59,9 +59,15 @@ class GitHubReleaser(Releaser):
 
         for artefact in self.artefacts:
             command.append("-a")
-            command.append(artefact)
+            expanded_artefact = os.path.expandvars(artefact)
+            command.append(expanded_artefact)
 
         command.append(str(new_version))
+
+        return command
+
+    def release(self, new_version: Version) -> None:
+        command = self.release_command(new_version)
 
         changelog = self.get_changelog()
         if changelog:
