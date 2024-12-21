@@ -45,7 +45,7 @@ class ChangelogTestCase(unittest.TestCase):
         with temp_directory():
             touch("CHANGELOG.md", "# My Changelog\n# Current Release\n")
 
-            with self.assertRaisesRegexp(
+            with self.assertRaisesRegex(
                 Exception, "Changelog has multiple level 1 headings."
             ):
                 parse_changelog("CHANGELOG.md")
@@ -54,7 +54,7 @@ class ChangelogTestCase(unittest.TestCase):
         with temp_directory():
             touch("CHANGELOG.md", "Hello World")
 
-            with self.assertRaisesRegexp(
+            with self.assertRaisesRegex(
                 Exception,
                 "Changelog does not start with a level 1 heading, including the changelog name.",
             ):
@@ -64,9 +64,9 @@ class ChangelogTestCase(unittest.TestCase):
         with temp_directory():
             touch("CHANGELOG.md", "# H1\n### H3\n")
 
-            with self.assertRaisesRegexp(
+            with self.assertRaisesRegex(
                 Exception,
-                "Level 3 heading was not found within a release \(level 2 heading\)",
+                r"Level 3 heading was not found within a release \(level 2 heading\)",
             ):
                 parse_changelog("CHANGELOG.md")
 
@@ -74,7 +74,7 @@ class ChangelogTestCase(unittest.TestCase):
         with temp_directory():
             touch("CHANGELOG.md", "# H1\n#### H3\n")
 
-            with self.assertRaisesRegexp(
+            with self.assertRaisesRegex(
                 Exception,
                 "Changelog heading level jumps from level 1 to level 4. Must jump one level per heading.",
             ):

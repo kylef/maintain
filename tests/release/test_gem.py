@@ -72,8 +72,8 @@ class GemReleaserTestCase(unittest.TestCase):
             touch("cocoapods.gem")
             releaser = GemReleaser()
 
-            with self.assertRaisesRegexp(
+            with self.assertRaisesRegex(
                 Exception,
-                "Cannot release, found multiple unexpected gems \(cocoapods.gem\)",
+                r"Cannot release, found multiple unexpected gems \(cocoapods.gem\)",
             ):
                 releaser.release("1.1.0")

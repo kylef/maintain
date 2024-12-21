@@ -37,7 +37,7 @@ class GitHubReleaserTestCase(unittest.TestCase):
     def test_initialisation_without_hub(self):
         path = os.environ["PATH"]
 
-        with self.assertRaisesRegexp(Exception, "GitHub releases require hub"):
+        with self.assertRaisesRegex(Exception, "GitHub releases require hub"):
             os.environ["PATH"] = "/tmp"
             GitHubReleaser(config={})
 
