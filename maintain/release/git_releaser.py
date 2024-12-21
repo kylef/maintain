@@ -52,7 +52,10 @@ class GitReleaser(Releaser):
         if self.has_origin():
             self.repo.remotes.origin.fetch()
 
-            if self.repo.remotes.origin.refs[self.default_branch].commit != self.repo.head.ref.commit:
+            if (
+                self.repo.remotes.origin.refs[self.default_branch].commit
+                != self.repo.head.ref.commit
+            ):
                 raise Exception(f"{self.default_branch} has unsynced changes.")
 
     def has_origin(self) -> bool:
