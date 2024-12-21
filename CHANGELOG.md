@@ -6,6 +6,14 @@
 
 - Drop support for Python < 3.7.
 
+### Enhancements
+
+- Support using branches named `main` as a default branch (previously default
+  branches had to be named `master`).
+
+- Repo commands now sort the list of repositories to provide a consistent
+  experience across macOS and Linux platforms.
+
 ## 0.3.0 (2018-09-11)
 
 ### Breaking
