@@ -35,9 +35,9 @@ class GitReleaser(Releaser):
         self.commit_format = (config or {}).get("commit_format", "Release {version}")
         self.tag_format = (config or {}).get("tag_format", "{version}")
 
-        default_branch = get_default_branch(self.repo)
+        self.default_branch = get_default_branch(self.repo)
 
-        if self.repo.head.ref != self.repo.heads[default_branch]:
+        if self.repo.head.ref != self.repo.heads[self.default_branch]:
             # TODO: Support releasing from stable/hotfix branches
             raise Exception(
                 "You need to be on the default branch in order to do a release."
@@ -52,8 +52,8 @@ class GitReleaser(Releaser):
         if self.has_origin():
             self.repo.remotes.origin.fetch()
 
-            if self.repo.remotes.origin.refs[default_branch].commit != self.repo.head.ref.commit:
-                raise Exception(f"{default_branch} has unsynced changes.")
+            if self.repo.remotes.origin.refs[self.default_branch].commit != self.repo.head.ref.commit:
+                raise Exception(f"{self.default_branch} has unsynced changes.")
 
     def has_origin(self) -> bool:
         try:

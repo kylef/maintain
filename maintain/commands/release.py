@@ -1,11 +1,11 @@
 import logging
-import os
 import sys
 
 import click
 from click.exceptions import ClickException, MissingParameter
 from semantic_version import Version
 
+from maintain.git import get_default_branch
 from maintain.release.aggregate import AggregateReleaser
 from maintain.release.git_releaser import GitReleaser
 from maintain.release.github import GitHubReleaser
@@ -98,7 +98,7 @@ def release(
     if bump:
         logger.info("Bumping {}".format(version))
 
-        ref = git_releaser.repo.refs.master
+        ref = git_releaser.repo.refs[git_releaser.default_branch]
         if pull_request:
             branch = "release-{}".format(version)
             ref = git_releaser.repo.create_head(branch, git_releaser.repo.head)
