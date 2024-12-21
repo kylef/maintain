@@ -202,7 +202,7 @@ class RepoCommandTestCase(unittest.TestCase):
 
             self.assertEqual(
                 result.output,
-                "repo\n - Found multiple default branches, ambgious: master, main\n",
+                "repo\n - Found multiple default branches, ambgious: main, master\n",
             )
             self.assertEqual(result.exit_code, 1)
 

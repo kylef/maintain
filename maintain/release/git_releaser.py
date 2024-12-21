@@ -4,6 +4,7 @@ import os
 from git import Repo
 from semantic_version import Version
 
+from maintain.git import get_default_branch
 from maintain.process import invoke
 from maintain.release.base import Releaser
 
@@ -34,10 +35,12 @@ class GitReleaser(Releaser):
         self.commit_format = (config or {}).get("commit_format", "Release {version}")
         self.tag_format = (config or {}).get("tag_format", "{version}")
 
-        if self.repo.head.ref != self.repo.heads.master:
+        default_branch = get_default_branch(self.repo)
+
+        if self.repo.head.ref != self.repo.heads[default_branch]:
             # TODO: Support releasing from stable/hotfix branches
             raise Exception(
-                "You need to be on the `master` branch in order to do a release."
+                "You need to be on the default branch in order to do a release."
             )
 
         if self.repo.is_dirty():
@@ -50,7 +53,7 @@ class GitReleaser(Releaser):
             self.repo.remotes.origin.fetch()
 
             if self.repo.remotes.origin.refs.master.commit != self.repo.head.ref.commit:
-                raise Exception("Master has unsynced changes.")
+                raise Exception(f"{default_branch} has unsynced changes.")
 
     def has_origin(self) -> bool:
         try:

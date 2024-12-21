@@ -7,6 +7,7 @@ import click
 from git import Repo
 
 from maintain.process import chdir
+from maintain.git import get_default_branch
 
 
 def gather_repositories():
@@ -33,21 +34,17 @@ def check_repo(name: str, path: str) -> bool:
     repo = Repo(path)
     failures = []
 
-    default_branches = [branch for branch in ["master", "main"] if branch in repo.heads]
-    if len(default_branches) == 1:
-        branch = default_branches[0]
-        if repo.head.ref != repo.heads[branch]:
-            failures.append(f"Current branch is not default branch ({branch})")
+    try:
+        default_branch = get_default_branch(repo)
+
+        if repo.head.ref != repo.heads[default_branch]:
+            failures.append(f"Current branch is not default branch ({default_branch})")
 
         if "origin" in repo.remotes:
-            if repo.remotes.origin.refs[branch].commit != repo.head.ref.commit:
+            if repo.remotes.origin.refs[default_branch].commit != repo.head.ref.commit:
                 failures.append("Branch has unsynced changes")
-
-    elif len(default_branches) == 0:
-        failures.append("Could not find a default branch")
-    else:
-        branches = ", ".join(default_branches)
-        failures.append(f"Found multiple default branches, ambgious: {branches}")
+    except Exception as e:
+        failures.append(str(e))
 
     if repo.is_dirty():
         failures.append("Repository has unstaged changes")
