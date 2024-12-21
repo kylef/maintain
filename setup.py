@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="maintain",
-    version="0.4.0",
+    version="0.3.0",
     description="maintain",
     url="https://github.com/kylef/maintain",
     packages=find_packages(),
