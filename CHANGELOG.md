@@ -1,6 +1,6 @@
 # Maintain Changelog
 
-## TBD
+## 0.4.0 (2024-12-21)
 
 ### Breaking
 
